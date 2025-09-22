@@ -14,7 +14,7 @@ git add .
 
 # Create initial commit
 echo "💾 Creating initial commit..."
-git commit -m "Initial commit: Gig4U platform with React
+git commit -m "Initial commit: Exponentio Labs platform with Next.js
 
 ✨ Features:
 - Hero section with background video
