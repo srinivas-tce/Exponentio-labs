@@ -92,10 +92,10 @@ const ContactForm = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Apply for MVP Development
+            Let's Talk About Your Project
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Ready to bring your idea to life? Fill out the form below and let's discuss how we can help you build your MVP.
+            Ready to bring your idea to life? Fill out the form below and let's discuss how we can help you build your Project.
           </p>
         </div>
 
@@ -172,7 +172,7 @@ const ContactForm = () => {
                   value={formData.company}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Your company name"
+                  placeholder="Your company/organization name (Optional)"
                 />
               </div>
             </div>
@@ -182,7 +182,7 @@ const ContactForm = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">MVP Details</h3>
               
               <div className="space-y-6">
-                <div>
+                <div className='hidden'>
                   <label htmlFor="mvpName" className="block text-sm font-medium text-gray-700 mb-2">
                     MVP Name *
                   </label>
@@ -210,7 +210,7 @@ const ContactForm = () => {
                     value={formData.mvpDescription}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Describe your MVP idea, target audience, and key features..."
+                    placeholder="Describe your Idea..."
                   />
                 </div>
 
@@ -240,7 +240,7 @@ const ContactForm = () => {
 
                   <div>
                     <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 mb-2">
-                      Timeline
+                      Timeline (Optional)
                     </label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -261,7 +261,7 @@ const ContactForm = () => {
                   </div>
                 </div>
 
-                <div>
+                <div className='hidden'>
                   <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
                     Your Experience Level
                   </label>
@@ -285,7 +285,7 @@ const ContactForm = () => {
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                    Additional Message
+                    Anything you want to add?
                   </label>
                   <div className="relative">
                     <MessageSquare className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
@@ -296,7 +296,7 @@ const ContactForm = () => {
                       value={formData.message}
                       onChange={handleChange}
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Any additional information you'd like to share..."
+                      placeholder="We are open to all ideas, so feel free to share your thoughts..."
                     />
                   </div>
                 </div>
@@ -318,7 +318,7 @@ const ContactForm = () => {
                 ) : (
                   <>
                     <Send className="w-5 h-5 mr-3" />
-                    Submit MVP Application
+                    Submit
                   </>
                 )}
               </button>

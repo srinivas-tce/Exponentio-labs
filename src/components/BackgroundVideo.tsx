@@ -54,38 +54,34 @@ const BackgroundVideo = () => {
       <div className="hero-content">
         <div className="hero-text">
           <h1 className="hero-title">
-            Top-Talent Outsourcing Needs
+          Top Engineers, Ready for Your Projects
           </h1>
-          <p className="hero-subtitle">
-            Connect with skilled gig workers and access cutting-edge lab equipment for your projects. 
-            Scale your business with flexible, on-demand talent and advanced technology solutions.
+          <p className="hero-subtitle font-medium text-xl">
+          Our lab produces the next generation of skilled technologists to shape your future!
           </p>
           
           <div className="hero-buttons">
             <Link href="/jobs" className="btn-primary">
-              Find GIGs
+              Talk to Us
             </Link>
-            <Link href="/products" className="btn-secondary">
-              Browse Equipment
+            <Link href="/products" className="btn-primary bg-orange-600">
+              Browse our Expertise
             </Link>
           </div>
           
-          <div className="hero-stats">
+          <div className="hidden hero-stats">
+          
             <div className="stat-item">
-              <div className="stat-number">50K+</div>
-              <div className="stat-label">Gig Workers</div>
+              <div className="stat-number">5</div>
+              <div className="stat-label">Domains</div>
             </div>
             <div className="stat-item">
-              <div className="stat-number">500+</div>
-              <div className="stat-label">Cities</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-number">28+</div>
-              <div className="stat-label">States</div>
+              <div className="stat-number">10+</div>
+              <div className="stat-label">Projects Shipped</div>
             </div>
             <div className="stat-item">
               <div className="stat-number">100+</div>
-              <div className="stat-label">Equipment</div>
+              <div className="stat-label">Skilled Engineers</div>
             </div>
           </div>
         </div>

@@ -27,7 +27,13 @@ import {
   Award,
   Lock,
   Eye,
-  MessageCircle
+  MessageCircle,
+  Bot,
+  Cpu, Code,
+  Wifi,
+  Lightbulb,
+  RocketIcon
+  
 } from 'lucide-react';
 
 const HomePage = () => {
@@ -39,44 +45,45 @@ const HomePage = () => {
     { number: '28+', label: 'States and UT Penetrated' }
   ];
 
-  const gigCategories = [
-    {
-      icon: <Store className="w-12 h-12 text-blue-600" />,
-      title: 'Retail Gigs',
-      description: 'Flexible staffing for retail stores, brand audits, and shelf management.',
-      features: ['Weekend Support', 'Peak Season Staffing', 'Brand Audits', 'Shelf Management']
-    },
-    {
-      icon: <LocationIcon className="w-12 h-12 text-green-600" />,
-      title: 'Field Gigs',
-      description: 'On-ground execution, surveys, and data collection across various locations.',
-      features: ['Market Research', 'Data Collection', 'Field Surveys', 'Location Services']
-    },
-    {
-      icon: <Calendar className="w-12 h-12 text-purple-600" />,
-      title: 'Event Gigs',
-      description: 'Event management, promotion, and support for various occasions.',
-      features: ['Event Setup', 'Promotion', 'Crowd Management', 'Logistics Support']
-    },
-    {
-      icon: <Utensils className="w-12 h-12 text-orange-600" />,
-      title: 'Food & Beverage',
-      description: 'Restaurant support, food delivery, and catering services.',
-      features: ['Kitchen Support', 'Delivery', 'Catering', 'Food Service']
-    },
-    {
-      icon: <Truck className="w-12 h-12 text-red-600" />,
-      title: 'Logistics Gigs',
-      description: 'Delivery, warehousing, and supply chain support services.',
-      features: ['Last Mile Delivery', 'Warehouse Support', 'Inventory Management', 'Supply Chain']
-    },
-    {
-      icon: <Headphones className="w-12 h-12 text-indigo-600" />,
-      title: 'Customer Support',
-      description: 'Remote and on-site customer service and support roles.',
-      features: ['Call Center', 'Chat Support', 'Technical Support', 'Customer Service']
-    }
-  ];
+
+const gigCategories = [
+  {
+    icon: <Cpu className="w-12 h-12 text-blue-600" />,
+    title: 'Agentic AI',
+    description: 'Building intelligent, autonomous systems that think, act, and adapt.',
+    features: ['Autonomous Systems', 'Smart Decision-Making', 'Predictive AI', 'Adaptive Models']
+  },
+  {
+    icon: <Code className="w-12 h-12 text-green-600" />,
+    title: 'Full Stack Development',
+    description: 'End-to-end web and app solutions, from idea to deployment.',
+    features: ['Frontend & Backend', 'API Development', 'Database Integration', 'Responsive Design']
+  },
+  {
+    icon: <img src="https://www.inevitable-infotech.com/wp-content/uploads/2024/05/AR-VR-Testing-Services_Vector-Image.svg" className="w-50 h-12 text-purple-600" />,
+    title: 'AR / VR & Metaverse',
+    description: 'Immersive experiences that blend reality with imagination.',
+    features: ['AR Apps', 'VR Experiences', 'Metaverse Integration', '3D Simulations']
+  },
+  {
+    icon: <Bot className="w-12 h-12 text-orange-600" />,
+    title: 'Robotics',
+    description: 'Smart machines engineered for precision and efficiency.',
+    features: ['Automation', 'Industrial Robotics', 'AI-Powered Robotics', 'Robotic Design']
+  },
+  {
+    icon: <Wifi />,
+    title: 'Embedded & IoT',
+    description: 'Connected devices driving real-time insights and automation.',
+    features: ['IoT Devices', 'Embedded Systems', 'Sensor Networks', 'Automation Solutions']
+  },
+  {
+    icon: <Lightbulb className="w-12 h-12 text-indigo-600" />,
+    title: 'Idea Labs',
+    description: 'From spark to prototype, we transform bold ideas into reality.',
+    features: ['Prototyping', 'Innovation', 'Product Design', 'MVP Development']
+  }
+];
 
   const reasons = [
     {
@@ -105,7 +112,7 @@ const HomePage = () => {
       description: 'Scale up or down based on your business requirements instantly.'
     },
     {
-      icon: <Award className="w-8 h-8 text-indigo-600" />,
+      icon: <Lightbulb className="w-8 h-8 text-indigo-600" />,
       title: 'Quality Assurance',
       description: 'Maintain high service quality with our performance monitoring system.'
     }
@@ -210,17 +217,10 @@ const HomePage = () => {
   ];
 
   const companies = [
-    { name: 'Google', logo: 'https://logo.clearbit.com/google.com' },
-    { name: 'Microsoft', logo: 'https://logo.clearbit.com/microsoft.com' },
-    { name: 'Amazon', logo: 'https://logo.clearbit.com/amazon.com' },
-    { name: 'Facebook', logo: 'https://logo.clearbit.com/facebook.com' },
-    { name: 'Apple', logo: 'https://logo.clearbit.com/apple.com' },
-    { name: 'Netflix', logo: 'https://logo.clearbit.com/netflix.com' },
-    { name: 'Uber', logo: 'https://logo.clearbit.com/uber.com' },
-    { name: 'Airbnb', logo: 'https://logo.clearbit.com/airbnb.com' },
-    { name: 'Spotify', logo: 'https://logo.clearbit.com/spotify.com' },
-    { name: 'Tesla', logo: 'https://logo.clearbit.com/tesla.com' },
-    { name: 'PayPal', logo: 'https://logo.clearbit.com/paypal.com' }
+    { name: 'Inunity', logo: 'https://inunity.in/wp-content/uploads/2022/06/InUnity-Full-Logo-2.png' },
+    { name: 'Abhyudaya Softech', logo: 'https://www.abhyudayasw.com/_next/image?url=%2Flogo.png&w=640&q=75' },
+    { name: 'Surya IQ Academy', logo: 'https://www.suryaiqacademy.com/_next/image?url=%2Flogo.jpg&w=48&q=75' },
+    {name: "Honnathi Fab Technologies", logo: "https://www.honnathifabtech.com/images/resources/Logo%202-1.png"}
   ];
 
   return (
@@ -229,14 +229,14 @@ const HomePage = () => {
       <BackgroundVideo />
 
       {/* Welcome Section */}
-      <section className="py-20 bg-white">
+      <section className="py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Welcome to Exponentio Labs
+          <div className="text-center">
+            <h2 className="text-4xl font-medium text-gray-900 mb-4">
+              Welcome to <span className='text-blue-600 font-bold'>Exponentio Labs</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Your one-stop platform for connecting with skilled gig workers and accessing cutting-edge lab equipment for your projects.
+             Looking for a Skilled Young Team to take your idea from Zero to Hero? We build MVPs that launch fast and grow strong.
             </p>
           </div>
         </div>
@@ -247,10 +247,10 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Discover Your Perfect Gig Worker!
+              Find the <span className='text-orange-600 font-bold'>Team</span> That Gets <span className='text-blue-600 font-bold'>Your Project</span> Shipped 🚀
             </h2>
             <p className="text-xl text-gray-600">
-              Choose from our diverse range of gig categories
+             Domains We Power with Industry-Updated Technologies
             </p>
           </div>
           
@@ -327,67 +327,63 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Stats Section with Circles */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center">
-            <div className="relative flex items-center justify-center">
-              {/* First Circle - Pink */}
-              <div className="w-48 h-48 bg-pink-500 rounded-full flex flex-col items-center justify-center text-white shadow-lg z-10 relative">
-                <div className="text-4xl font-bold">39000+</div>
-                <div className="text-sm font-medium text-center px-4">GIG WORKERS REGISTERED</div>
-              </div>
-              
-              {/* Second Circle - Pink/Magenta */}
-              <div className="w-48 h-48 bg-pink-600 rounded-full flex flex-col items-center justify-center text-white shadow-lg z-20 relative -ml-8">
-                <div className="text-4xl font-bold">7500+</div>
-                <div className="text-sm font-medium text-center px-4">PINCODES PENETRATED</div>
-              </div>
-              
-              {/* Third Circle - Dark Red */}
-              <div className="w-48 h-48 bg-red-700 rounded-full flex flex-col items-center justify-center text-white shadow-lg z-30 relative -ml-8">
-                <div className="text-4xl font-bold">2000+</div>
-                <div className="text-sm font-medium text-center px-4">CITIES PENETRATED</div>
-              </div>
-              
-              {/* Fourth Circle - Darkest Red */}
-              <div className="w-48 h-48 bg-red-800 rounded-full flex flex-col items-center justify-center text-white shadow-lg z-40 relative -ml-8">
-                <div className="text-4xl font-bold">34+</div>
-                <div className="text-sm font-medium text-center px-4">STATES AND UT PENETRATED</div>
-              </div>
-            </div>
-          </div>
+     
+  {/* Stats Section with Circles */}
+{/* Reasons Why Employers Choose Exponentio Labs */}
+<section className="py-20 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        Why Choose Exponentio Labs?
+      </h2>
+      <p className="text-xl text-gray-600">
+        The edge that makes us your perfect innovation partner
+      </p>
+    </div>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Reason 1 */}
+      <div className="text-center">
+        <div className="mb-6 flex justify-center text-indigo-600">
+          <Cpu className="w-12 h-12" />
         </div>
-      </section>
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Future-Ready Infrastructure</h3>
+        <p className="text-gray-600">
+          AR/VR labs, robotics kits, embedded systems, AI workstations, and idea labs equipped for real-world innovation.
+        </p>
+      </div>
+      
+      {/* Reason 2 */}
+      <div className="text-center">
+        <div className="mb-6 flex justify-center text-green-600">
+          <Users className="w-12 h-12" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Skilled Young Technologists</h3>
+        <p className="text-gray-600">
+          A growing pool of passionate engineers trained on industry-updated tools and technologies.
+        </p>
+      </div>
+      
+      {/* Reason 3 */}
+      <div className="text-center">
+        <div className="mb-6 flex justify-center text-red-600">
+          <RocketIcon className="w-12 h-12" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Idea to MVP Acceleration</h3>
+        <p className="text-gray-600">
+          From prototyping to product launch, we help you turn bold ideas into scalable solutions faster.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
-      {/* Reasons Why Employers Choose Exponentio Labs */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Reasons Why Employers Choose Exponentio Labs
-            </h2>
-            <p className="text-xl text-gray-600">
-              Discover what makes us the preferred choice for businesses
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {reasons.map((reason, index) => (
-              <div key={index} className="text-center">
-                <div className="mb-6 flex justify-center">
-                  {reason.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{reason.title}</h3>
-                <p className="text-gray-600">{reason.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
+
+  
 
       {/* Latest Blogs Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="hidden py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -436,7 +432,7 @@ const HomePage = () => {
       <ContactForm />
 
       {/* CTA Section */}
-      <section className="py-20 bg-blue-600">
+      <section className="hidden py-20 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">
             Ready to Get Started?
