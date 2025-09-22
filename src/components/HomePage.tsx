@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import BackgroundVideo from './BackgroundVideo';
 import ContactForm from './ContactForm';
@@ -35,6 +35,211 @@ import {
   RocketIcon
   
 } from 'lucide-react';
+
+// Interactive Timeline Component
+const InteractiveTimeline = () => {
+  const [visibleSteps, setVisibleSteps] = useState<number[]>([]);
+  const [progress, setProgress] = useState(0);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  const timelineSteps = [
+    {
+      date: "Week 1",
+      title: "Start of Evaluation",
+      description: "Preparation",
+      icon: "🚀"
+    },
+    {
+      date: "Week 2", 
+      title: "Initial Scoping",
+      description: "Data checking",
+      icon: "✓"
+    },
+    {
+      date: "Week 3",
+      title: "Validation", 
+      description: "Completed proof of concept",
+      icon: "✓"
+    },
+    {
+      date: "Week 4",
+      title: "Contracting",
+      description: "Signed Contract",
+      icon: "📝"
+    },
+    {
+      date: "Week 5",
+      title: "Development",
+      description: "Agile development process",
+      icon: "⚡"
+    },
+    {
+      date: "Week 6",
+      title: "Deployment",
+      description: "Launch & Support",
+      icon: "🌐"
+    }
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!timelineRef.current) return;
+
+      const timeline = timelineRef.current;
+      const rect = timeline.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate how much of the timeline is visible
+      const timelineTop = rect.top;
+      const timelineHeight = rect.height;
+      const viewportCenter = windowHeight / 2;
+      
+      // Calculate progress based on scroll position
+      const scrollProgress = Math.max(0, Math.min(1, (viewportCenter - timelineTop) / timelineHeight));
+      setProgress(scrollProgress);
+      
+      // Determine which steps should be visible based on scroll position
+      const newVisibleSteps: number[] = [];
+      const stepCount = timelineSteps.length;
+      
+      for (let i = 0; i < stepCount; i++) {
+        const stepThreshold = (i + 1) / stepCount;
+        if (scrollProgress >= stepThreshold - 0.1) {
+          newVisibleSteps.push(i);
+        }
+      }
+      
+      setVisibleSteps(newVisibleSteps);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial call
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <section className="py-20 bg-white" ref={timelineRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            How We <span className="text-green-600">Work</span>
+          </h2>
+          <p className="text-xl text-gray-600">
+            Our proven process from idea to deployment
+          </p>
+        </div>
+
+        <div className="relative">
+          {/* Main Timeline Container */}
+          <div className="relative">
+            {/* Timeline Line */}
+            <div className="absolute top-12 left-0 right-0 h-1 bg-gray-200 rounded-full">
+              <div 
+                className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${progress * 100}%` }}
+              ></div>
+            </div>
+
+            {/* Timeline Steps */}
+            <div className="flex justify-between items-start relative z-10">
+              {timelineSteps.map((item, index) => {
+                const isVisible = visibleSteps.includes(index);
+                const isCompleted = visibleSteps.includes(index);
+                
+                return (
+                  <div key={index} className="flex flex-col items-center text-center max-w-32">
+                    {/* Date */}
+                    <div className="mb-2">
+                      <span className={`text-sm font-bold transition-colors duration-500 ${
+                        isCompleted ? 'text-green-600' : 'text-gray-500'
+                      }`}>
+                        {item.date}
+                      </span>
+                    </div>
+
+                    {/* Timeline Node */}
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg mb-3 transition-all duration-700 transform ${
+                      isCompleted 
+                        ? 'bg-green-500 scale-110' 
+                        : 'bg-gray-300 scale-100'
+                    } ${isVisible ? 'animate-pulse' : ''}`}>
+                      {isCompleted ? item.icon : '○'}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className={`text-sm font-bold mb-1 leading-tight transition-all duration-500 ${
+                      isVisible ? 'text-gray-900' : 'text-gray-400'
+                    }`}>
+                      {item.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className={`text-xs leading-tight transition-all duration-500 ${
+                      isVisible ? 'text-gray-500' : 'text-gray-300'
+                    }`}>
+                      {item.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Flag Markers */}
+            <div className="mt-8 space-y-6">
+              {/* Flag 1 - Between Week 1 and Week 2 */}
+              <div className={`flex items-center ml-16 transition-all duration-700 ${
+                visibleSteps.length >= 2 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+              }`}>
+                <div className="w-0 h-0 border-l-4 border-l-green-500 border-t-2 border-t-transparent border-b-2 border-b-transparent mr-3"></div>
+                <div className="flex items-center">
+                  <div className="w-1 h-8 bg-gray-300 mr-3"></div>
+                  <div>
+                    <div className="text-sm font-bold text-gray-900">Client Meeting</div>
+                    <div className="text-xs text-gray-500">Zoom video call with team</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Flag 2 - Between Week 4 and Week 5 */}
+              <div className={`flex items-center ml-32 transition-all duration-700 ${
+                visibleSteps.length >= 5 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+              }`}>
+                <div className="w-0 h-0 border-l-4 border-l-red-500 border-t-2 border-t-transparent border-b-2 border-b-transparent mr-3"></div>
+                <div className="flex items-center">
+                  <div className="w-1 h-8 bg-gray-300 mr-3"></div>
+                  <div>
+                    <div className="text-sm font-bold text-gray-900">Milestone Review</div>
+                    <div className="text-xs text-gray-500">Progress assessment & feedback</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Indicator */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center space-x-4 bg-gray-50 px-6 py-3 rounded-full">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-700">Completed</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-700">Upcoming</span>
+            </div>
+            <div className="text-sm text-gray-500">
+              <span className="font-semibold text-green-600">
+                {Math.round(progress * 100)}%
+              </span> Complete
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const HomePage = () => {
 
@@ -427,6 +632,9 @@ const gigCategories = [
           </div>
         </div>
       </section>
+
+      {/* How We Work Timeline */}
+      <InteractiveTimeline />
 
       {/* Contact Form */}
       <ContactForm />
