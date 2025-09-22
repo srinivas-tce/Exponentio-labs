@@ -1,4 +1,4 @@
-# Exponentio Labs Platform - Next.js Version
+# Exponential Labs Platform - Next.js Version
 
 A comprehensive innovation platform with advanced lab equipment access and cutting-edge technology solutions, built with Next.js 14 for optimal SEO and performance.
 

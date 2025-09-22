@@ -122,7 +122,7 @@ const gigCategories = [
     {
       name: 'Sarah Johnson',
       role: 'Store Manager, Retail Chain',
-      content: 'Exponentio Labs has been a game-changer for our research and development needs. The equipment and support are professional and reliable.',
+      content: 'Exponential Labs has been a game-changer for our research and development needs. The equipment and support are professional and reliable.',
       rating: 5,
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
     },
@@ -233,7 +233,7 @@ const gigCategories = [
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-4xl font-medium text-gray-900 mb-4">
-              Welcome to <span className='text-blue-600 font-bold'>Exponentio Labs</span>
+              Welcome to <span className='text-blue-600 font-bold'>Exponential Labs</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
              Looking for a Skilled Young Team to take your idea from Zero to Hero? We build MVPs that launch fast and grow strong.
@@ -329,12 +329,12 @@ const gigCategories = [
 
      
   {/* Stats Section with Circles */}
-{/* Reasons Why Employers Choose Exponentio Labs */}
+{/* Reasons Why Employers Choose Exponential Labs */}
 <section className="py-20 bg-white">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="text-center mb-16">
       <h2 className="text-4xl font-bold text-gray-900 mb-4">
-        Why Choose Exponentio Labs?
+        Why Choose Exponential Labs?
       </h2>
       <p className="text-xl text-gray-600">
         The edge that makes us your perfect innovation partner
@@ -438,7 +438,7 @@ const gigCategories = [
             Ready to Get Started?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of businesses already using Exponentio Labs
+            Join thousands of businesses already using Exponential Labs
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -448,10 +448,10 @@ const gigCategories = [
               Get Started Free
             </Link>
             <Link
-              href="/jobs"
+              href="/services"
               className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
             >
-              Browse Jobs
+              Our Services
             </Link>
           </div>
         </div>

@@ -7,12 +7,12 @@ import Footer from '@/components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Exponentio Labs - Advanced Lab Equipment & Innovation Platform',
+  title: 'Exponential Labs - Advanced Lab Equipment & Innovation Platform',
   description: 'Cutting-edge AR/VR, Robotics, Fullstack Development, Embedded Systems, Agentic AI, and IDEA Lab equipment for research and development. Connect with skilled professionals.',
   keywords: 'lab equipment, AR/VR, robotics, AI, embedded systems, fullstack development, IDEA lab, innovation, research',
-  authors: [{ name: 'Exponentio Labs Team' }],
-  creator: 'Exponentio Labs',
-  publisher: 'Exponentio Labs',
+  authors: [{ name: 'Exponential Labs Team' }],
+  creator: 'Exponential Labs',
+  publisher: 'Exponential Labs',
   formatDetection: {
     email: false,
     address: false,
@@ -23,16 +23,16 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Exponentio Labs - Advanced Lab Equipment & Innovation Platform',
+    title: 'Exponential Labs - Advanced Lab Equipment & Innovation Platform',
     description: 'Cutting-edge AR/VR, Robotics, Fullstack Development, Embedded Systems, Agentic AI, and IDEA Lab equipment for research and development.',
     url: 'https://exponentiolabs.com',
-    siteName: 'Exponentio Labs',
+    siteName: 'Exponential Labs',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Exponentio Labs Platform',
+        alt: 'Exponential Labs Platform',
       },
     ],
     locale: 'en_US',
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Exponentio Labs - Advanced Lab Equipment & Innovation Platform',
+    title: 'Exponential Labs - Advanced Lab Equipment & Innovation Platform',
     description: 'Cutting-edge AR/VR, Robotics, Fullstack Development, Embedded Systems, Agentic AI, and IDEA Lab equipment.',
     images: ['/og-image.jpg'],
   },

@@ -14,7 +14,7 @@ git add .
 
 # Create initial commit
 echo "💾 Creating initial commit..."
-git commit -m "Initial commit: Exponentio Labs platform with Next.js
+git commit -m "Initial commit: Exponential Labs platform with Next.js
 
 ✨ Features:
 - Hero section with background video
@@ -43,7 +43,7 @@ git commit -m "Initial commit: Exponentio Labs platform with Next.js
 
 # Add remote origin
 echo "🔗 Adding remote origin..."
-git remote add origin https://github.com/srinivas-tce/Exponentio-labs.git
+git remote add origin https://github.com/srinivas-tce/Exponential-labs.git
 
 # Set main branch
 echo "🌿 Setting main branch..."
@@ -55,6 +55,6 @@ git push -u origin main
 
 echo ""
 echo "✅ Successfully pushed to GitHub!"
-echo "🔗 Repository: https://github.com/srinivas-tce/Exponentio-labs.git"
+echo "🔗 Repository: https://github.com/srinivas-tce/Exponential-labs.git"
 echo ""
 echo "🎉 Your Gig4U project is now live on GitHub!"

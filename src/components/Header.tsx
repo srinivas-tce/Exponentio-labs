@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, Bell, MessageCircle, Menu, X } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 
 const Header = () => {
   const router = useRouter();
@@ -26,7 +26,7 @@ const Header = () => {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">E</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">Exponentio Labs</span>
+            <span className="text-xl font-bold text-gray-900">Exponential Labs</span>
           </Link>
 
           {/* Search Bar */}
@@ -47,36 +47,65 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/jobs"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Find Work
-            </Link>
+            <div className="relative group">
+              <Link
+                href="/services"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
+              >
+                Our Services
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </Link>
+              {/* Services Dropdown */}
+              <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="py-2">
+                  <Link
+                    href="/services/agentic-ai-development"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Agentic AI Development
+                  </Link>
+                  <Link
+                    href="/services/full-stack-development"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Full Stack Development
+                  </Link>
+                  <Link
+                    href="/services/ar-vr-metaverse"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    AR/VR & Metaverse
+                  </Link>
+                  <Link
+                    href="/services/robotics"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Robotics
+                  </Link>
+                  <Link
+                    href="/services/embedded-iot"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Embedded & IoT
+                  </Link>
+                  <Link
+                    href="/services/idea-labs"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Idea Labs
+                  </Link>
+                </div>
+              </div>
+            </div>
             <Link
               href="/products"
               className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             >
-              Equipment
-            </Link>
-            <Link
-              href="/post-job"
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Hire Talent
+              Explore Infrastructure
             </Link>
 
-            <div className="flex items-center space-x-3">
-              <Link
-                href="/messages"
-                className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-              >
-                <MessageCircle className="w-5 h-5" />
-              </Link>
-              <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
-                <Bell className="w-5 h-5" />
-              </button>
-            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -110,33 +139,59 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-200 py-4">
             <div className="space-y-2">
-              <Link
-                href="/jobs"
-                className="block px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Find Work
-              </Link>
+              <div className="px-3 py-2">
+                <div className="text-sm font-medium text-gray-900 mb-2">Our Services</div>
+                <div className="ml-4 space-y-1">
+                  <Link
+                    href="/services/agentic-ai-development"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Agentic AI Development
+                  </Link>
+                  <Link
+                    href="/services/full-stack-development"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Full Stack Development
+                  </Link>
+                  <Link
+                    href="/services/ar-vr-metaverse"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    AR/VR & Metaverse
+                  </Link>
+                  <Link
+                    href="/services/robotics"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Robotics
+                  </Link>
+                  <Link
+                    href="/services/embedded-iot"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Embedded & IoT
+                  </Link>
+                  <Link
+                    href="/services/idea-labs"
+                    className="block px-3 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Idea Labs
+                  </Link>
+                </div>
+              </div>
               <Link
                 href="/products"
                 className="block px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Equipment
-              </Link>
-              <Link
-                href="/post-job"
-                className="block px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Post a Job
-              </Link>
-              <Link
-                href="/messages"
-                className="block px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Messages
+                Explore Infrastructure
               </Link>
               <Link
                 href="/profile"
