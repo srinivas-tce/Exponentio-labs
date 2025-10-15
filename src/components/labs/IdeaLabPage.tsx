@@ -16,7 +16,7 @@ const IdeaLabPage = () => {
       quantity: 1,
       specifications: "High precision laser cutting for prototyping, various materials support",
       description: "Professional laser cutting system for precise prototyping and manufacturing",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse4.mm.bing.net/th/id/OIP.HtLmjvLOMsXuDnOiiqYEgwHaE8?pid=Api&P=0&h=180",
       status: "Available",
       features: ["High Precision", "Multi-material", "Prototyping", "Professional Grade", "Cutting"]
     },
@@ -27,7 +27,7 @@ const IdeaLabPage = () => {
       quantity: 3,
       specifications: "High resolution 3D printing for rapid prototyping, multiple materials",
       description: "Advanced 3D printing systems for rapid prototyping and product development",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse1.mm.bing.net/th/id/OIP.pd5rNxqzHxoxMGrgbGiVLAHaE9?pid=Api&P=0&h=180",
       status: "Available",
       features: ["High Resolution", "Rapid Prototyping", "Multi-material", "3D Printing", "Product Development"]
     },
@@ -38,7 +38,7 @@ const IdeaLabPage = () => {
       quantity: 1,
       specifications: "High-precision 3D scanning for reverse engineering and digitization",
       description: "Professional 3D scanner for capturing real-world objects and creating digital models",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse2.mm.bing.net/th/id/OIP.llYdM1wIpkc0GGUF9SH86wHaHa?pid=Api&P=0&h=180",
       status: "Available",
       features: ["High Precision", "Reverse Engineering", "Digitization", "Professional Grade", "3D Scanning"]
     },
@@ -49,7 +49,7 @@ const IdeaLabPage = () => {
       quantity: 1,
       specifications: "Computer-controlled routing for wood, plastic, and soft metal materials",
       description: "Precision CNC router for creating complex parts and prototypes",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse1.mm.bing.net/th/id/OIP.c9VzuPTSScctIyb2bJyD2AHaFj?pid=Api&P=0&h=180",
       status: "Available",
       features: ["Computer Controlled", "Multi-material", "Precision Routing", "Complex Parts", "Prototyping"]
     },
@@ -60,7 +60,7 @@ const IdeaLabPage = () => {
       quantity: 1,
       specifications: "Precision vinyl cutting for signage, decals, and prototyping",
       description: "Professional vinyl cutter for creating custom graphics and prototypes",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse1.mm.bing.net/th/id/OIP.c9VzuPTSScctIyb2bJyD2AHaFj?pid=Api&P=0&h=180",
       status: "Available",
       features: ["Precision Cutting", "Signage", "Decals", "Custom Graphics", "Prototyping"]
     },
@@ -71,7 +71,7 @@ const IdeaLabPage = () => {
       quantity: 1,
       specifications: "Combined lathe and milling machine for small precision parts",
       description: "Compact machining center for creating precision metal and plastic parts",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse1.mm.bing.net/th/id/OIP.c9VzuPTSScctIyb2bJyD2AHaFj?pid=Api&P=0&h=180",
       status: "Available",
       features: ["Combined Lathe/Mill", "Precision Parts", "Compact Design", "Metal/Plastic", "Machining"]
     },
@@ -82,7 +82,7 @@ const IdeaLabPage = () => {
       quantity: 1,
       specifications: "Desktop PCB milling for rapid prototyping and small batch production",
       description: "Precision PCB milling machine for creating custom circuit boards",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse1.mm.bing.net/th/id/OIP.c9VzuPTSScctIyb2bJyD2AHaFj?pid=Api&P=0&h=180",
       status: "Available",
       features: ["Desktop Milling", "PCB Fabrication", "Rapid Prototyping", "Small Batch", "Custom Boards"]
     },
@@ -93,7 +93,7 @@ const IdeaLabPage = () => {
       quantity: 1,
       specifications: "Interactive whiteboard for collaborative design and presentation",
       description: "Large interactive display for team collaboration and design sessions",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse1.mm.bing.net/th/id/OIP.c9VzuPTSScctIyb2bJyD2AHaFj?pid=Api&P=0&h=180",
       status: "Available",
       features: ["Interactive", "Collaborative", "Design Sessions", "Large Display", "Team Work"]
     }

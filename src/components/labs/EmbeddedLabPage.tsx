@@ -16,7 +16,7 @@ const EmbeddedLabPage = () => {
       quantity: 1,
       specifications: "Digital storage oscilloscope with built-in signal generator, 100MHz bandwidth",
       description: "Essential test equipment for embedded system development and debugging",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://www.paleotechnologist.net/wp-content/uploads/2012/03/Scope_setup_clean_sm.png",
       status: "Available",
       features: ["100MHz Bandwidth", "Digital Storage", "Signal Generator", "Built-in", "Debugging"]
     },
@@ -27,7 +27,7 @@ const EmbeddedLabPage = () => {
       quantity: 3,
       specifications: "32V / 3.2A dual channel programmable power supply with digital display",
       description: "Precision power supply for embedded system testing and development",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://materialsupply-saudi.com/wp-content/uploads/2023/06/spd3303c.jpg",
       status: "Available",
       features: ["32V / 3.2A", "Dual Channel", "Programmable", "Digital Display", "Precision"]
     },
@@ -38,7 +38,7 @@ const EmbeddedLabPage = () => {
       quantity: 1,
       specifications: "Professional soldering station with temperature control and desoldering capabilities",
       description: "Complete soldering workstation for PCB assembly and repair",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://m.media-amazon.com/images/I/71pnaH-VuqL.jpg",
       status: "Available",
       features: ["Temperature Control", "Desoldering", "Professional Grade", "PCB Assembly", "Repair"]
     },
@@ -49,7 +49,7 @@ const EmbeddedLabPage = () => {
       quantity: 4,
       specifications: "STM32 F4, F7, WL series boards for various embedded applications",
       description: "Complete STM32 development board collection for embedded system prototyping",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse2.mm.bing.net/th/id/OIP.iL0VPAN1Ypvge7bHB65OyAHaFU?pid=Api&P=0&h=180",
       status: "Available",
       features: ["STM32 F4/F7/WL", "Multiple Series", "Development Ready", "Prototyping", "Embedded"]
     },
@@ -60,7 +60,7 @@ const EmbeddedLabPage = () => {
       quantity: 5,
       specifications: "ESP32 S3, ESP32 + OLED boards for IoT and wireless applications",
       description: "WiFi-enabled microcontroller boards for IoT development and prototyping",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse3.mm.bing.net/th/id/OIP.vDDwk4mAWSUgT8jy2Zvi5AHaHa?pid=Api&P=0&h=180",
       status: "Available",
       features: ["ESP32 S3", "OLED Display", "WiFi Enabled", "IoT Ready", "Wireless"]
     },
@@ -71,7 +71,7 @@ const EmbeddedLabPage = () => {
       quantity: 4,
       specifications: "Nexys4 DDR Artix-7, ZYBO Z7-10, Trenz Electronic TE0712 FPGA boards",
       description: "Advanced FPGA development platforms for digital logic and high-speed processing",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse4.mm.bing.net/th/id/OIP.MG2P57dn19IVFUiTraBjPwHaHa?pid=Api&P=0&h=180",
       status: "Available",
       features: ["Artix-7 FPGA", "ZYBO Z7-10", "Trenz TE0712", "High Speed", "Digital Logic"]
     },
@@ -82,7 +82,7 @@ const EmbeddedLabPage = () => {
       quantity: 1,
       specifications: "Desktop PCB printer for rapid prototyping, two-layer boards, Gerber file support",
       description: "Revolutionary desktop PCB printer for rapid prototyping and small-batch production",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://res.cloudinary.com/dw7fqss5m/image/upload/f_auto,c_limit,w_3840,q_75/voltera/images/vone/largeVone.webp",
       status: "Available",
       features: ["Desktop Printer", "Two-layer Boards", "Gerber Support", "Rapid Prototyping", "Small Batch"]
     }

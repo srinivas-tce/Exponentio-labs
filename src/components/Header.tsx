@@ -3,18 +3,25 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, User, LogOut } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
 
 const Header = () => {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const { isAuthenticated, user, logout } = useAuthStore();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/jobs?search=${encodeURIComponent(searchQuery)}`);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
   };
 
   return (
@@ -106,6 +113,42 @@ const Header = () => {
               Explore Infrastructure
             </Link>
 
+            {/* Authentication Section */}
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                  {user?.thumbnail ? (
+                    <img
+                      src={user.thumbnail}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-900">{user?.name}</span>
+                    <span className="text-xs text-gray-500 capitalize">{user?.role}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1 text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+              >
+                Sign in with Inpulse
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -193,13 +236,44 @@ const Header = () => {
               >
                 Explore Infrastructure
               </Link>
-              <Link
-                href="/profile"
-                className="block px-3 py-2 text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Profile
-              </Link>
+
+              {/* Mobile Authentication Section */}
+              {isAuthenticated ? (
+                <div className="px-3 py-2 border-t border-gray-200">
+                  <div className="flex items-center space-x-3 mb-3">
+                    {user?.thumbnail ? (
+                      <img
+                        src={user.thumbnail}
+                        alt={user.name}
+                        className="w-10 h-10 rounded-full"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                    )}
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-900">{user?.name}</span>
+                      <span className="text-xs text-gray-500 capitalize">{user?.role}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors w-full"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="block px-3 py-2 bg-blue-600 text-white rounded-md text-center font-medium hover:bg-blue-700 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign in with Inpulse
+                </Link>
+              )}
             </div>
           </div>
         )}

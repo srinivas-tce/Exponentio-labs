@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import BackgroundVideo from './BackgroundVideo';
 import ContactForm from './ContactForm';
+import { useAuthStore } from '@/store/authStore';
 import { 
   Search, 
   Briefcase, 
@@ -242,6 +243,7 @@ const InteractiveTimeline = () => {
 };
 
 const HomePage = () => {
+  const { isAuthenticated, user } = useAuthStore();
 
   const stats = [
     { number: '50,000+', label: 'Professionals Registered' },
@@ -433,6 +435,51 @@ const gigCategories = [
       {/* Hero Section with Background Video */}
       <BackgroundVideo />
 
+      {/* User Welcome Section (if authenticated) */}
+      {isAuthenticated && user && (
+        <section className="py-8 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <div className="flex items-center justify-center space-x-4 mb-4">
+                {user.thumbnail ? (
+                  <img
+                    src={user.thumbnail}
+                    alt={user.name}
+                    className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
+                  />
+                ) : (
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                    <span className="text-white text-2xl font-bold">{user.name.charAt(0)}</span>
+                  </div>
+                )}
+                <div className="text-left">
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    Welcome back, <span className='text-blue-600'>{user.name}</span>!
+                  </h2>
+                  <p className="text-lg text-gray-600 capitalize">
+                    {user.role} • Exponential Labs
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-center space-x-4">
+                <Link
+                  href="/profile"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  View Profile
+                </Link>
+                <Link
+                  href="/jobs"
+                  className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium border border-blue-600 hover:bg-blue-50 transition-colors"
+                >
+                  Browse Opportunities
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Welcome Section */}
       <section className="py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -443,6 +490,22 @@ const gigCategories = [
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
              Looking for a Skilled Young Team to take your idea from Zero to Hero? We build MVPs that launch fast and grow strong.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Powered By Section */}
+      <section className="py-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-gray-500 mb-6">Powered By</h3>
+            <div className="flex justify-center items-center">
+              <img 
+                src="https://www.mphasis.com/content/dam/mphasis-com/global/logo/mphasis-logo.png" 
+                alt="Mphasis Logo" 
+                className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
+              />
+            </div>
           </div>
         </div>
       </section>

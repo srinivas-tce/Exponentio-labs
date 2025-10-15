@@ -16,7 +16,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "Stereo depth camera with up to 10m range, global shutter, integrated RGB sensor, 1280x720 @ 30fps",
       description: "Professional depth sensing camera for robotics navigation and object detection",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://thegadgetflow.com/wp-content/uploads/2020/07/Intel-RealSense-D455-Depth-Camera-001-1200x1125.jpg",
       status: "Available",
       features: ["10m Range", "Global Shutter", "RGB Sensor", "1280x720 @ 30fps", "ROS Compatible"]
     },
@@ -27,7 +27,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "12-DOF bionic quadruped with Raspberry Pi 4, ROS support, 3D printed body",
       description: "Advanced quadruped robot platform for locomotion research and development",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://www.mgsuperlabs.co.in/estore/image/cache/data/waveshare/21781/wavego-5%20(1)-500x500.jpg",
       status: "Available",
       features: ["12-DOF", "Raspberry Pi 4", "ROS Support", "3D Printed", "Bionic Design"]
     },
@@ -38,7 +38,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "6-DOF, 250g payload, 280mm reach, ROS/Python support, Raspberry Pi integration",
       description: "Compact robotic arm perfect for pick-and-place operations and educational projects",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://shop.elephantrobotics.com/cdn/shop/products/myCobot280A.png?v=1665995537",
       status: "Available",
       features: ["6-DOF", "250g Payload", "280mm Reach", "ROS/Python", "Raspberry Pi"]
     },
@@ -49,7 +49,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "Complete kit with controller, GPS, power module, and telemetry radios for drone development",
       description: "Professional flight controller system for autonomous drone and UAV development",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://ccdn.veerobot.com/image/cache/catalog/Images/Multirotors/Multirotor-Controllers/Commercial-Drone-FC/Pixhawk-2-4-8-Complete-Flight-Controller-Kit-01-550x550.jpg",
       status: "Available",
       features: ["Complete Kit", "GPS Module", "Power Module", "Telemetry", "Drone Development"]
     },
@@ -60,7 +60,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "360° 2D LiDAR with 16m range, 12Hz scanning frequency, ROS compatible",
       description: "High-precision 2D LiDAR sensor for mapping, navigation, and obstacle detection",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "http://5.imimg.com/data5/SELLER/Default/2022/2/NY/GO/HN/1833510/ydlidar-g4-2d-lidar-sensor-500x500.png",
       status: "Available",
       features: ["360° Scanning", "16m Range", "12Hz Frequency", "ROS Compatible", "High Precision"]
     },
@@ -71,7 +71,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "iRobot Create 3 base, Raspberry Pi 4, OAK-D-Lite RGBD camera, RPLidar A1",
       description: "Complete mobile robot platform for autonomous navigation and SLAM research",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://turtlebot.github.io/turtlebot4-user-manual/overview/media/lite_render.png",
       status: "Available",
       features: ["iRobot Base", "Raspberry Pi 4", "RGBD Camera", "RPLidar A1", "SLAM Ready"]
     },
@@ -82,7 +82,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "64GB unified memory, 2048-core NVIDIA Ampere GPU, 12-core ARM Cortex-A78AE CPU",
       description: "High-performance AI computing platform for edge robotics and autonomous systems",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse4.mm.bing.net/th/id/OIP.JzW7BpaXejfZSTYkU2g9-AHaEK?pid=Api&P=0&h=180",
       status: "Available",
       features: ["64GB Memory", "2048-core GPU", "12-core CPU", "Edge AI", "High Performance"]
     },
@@ -93,7 +93,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "14-channel wireless EEG headset with saline electrodes, research-grade, 8-hour battery",
       description: "Professional EEG headset for brain-computer interface research and development",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://www.amatek.com/assets/images/portfolio-epoc-flex-3.png",
       status: "Available",
       features: ["14 Channels", "Wireless", "Research Grade", "8-hour Battery", "BCI Ready"]
     },
@@ -104,7 +104,7 @@ const RoboticsLabPage = () => {
       quantity: 1,
       specifications: "16-channels of scientifically validated EEG, ECG, and EMG data, wireless connectivity",
       description: "Advanced biosensing platform for comprehensive physiological data collection",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://shop.openbci.com/cdn/shop/products/CytonDaisycaseCAD_713x.png?v=1653944236",
       status: "Available",
       features: ["16 Channels", "EEG/ECG/EMG", "Wireless", "Scientific Grade", "Multi-modal"]
     }

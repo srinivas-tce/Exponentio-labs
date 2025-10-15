@@ -16,7 +16,7 @@ const ARVRLabPage = () => {
       quantity: 1,
       specifications: "512GB storage, advanced hand tracking, mixed reality capabilities, 4K+ Infinite Display, Snapdragon XR2 Gen 2",
       description: "Latest generation VR headset with advanced mixed reality capabilities for immersive development and testing",
-      image: "https://images.unsplash.com/photo-1592478411213-6153e4c4a8bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://files.emalls.ir/files/Products/automatic/18546755/dqo0bsus_thumb3.jpg",
       status: "Available",
       features: [
         "4K+ Infinite Display",
@@ -33,7 +33,7 @@ const ARVRLabPage = () => {
       quantity: 1,
       specifications: "Hand tracking, gesture recognition, 150° field of view, 120 FPS tracking, sub-millimeter accuracy",
       description: "Advanced hand tracking controller for precise gesture recognition in AR/VR applications",
-      image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse1.mm.bing.net/th/id/OIP.TvNxQBsBBqo2kjOgxQAFlwHaEJ?pid=Api&P=0&h=180",
       status: "Available",
       features: [
         "150° Field of View",
@@ -50,7 +50,7 @@ const ARVRLabPage = () => {
       quantity: 1,
       specifications: "Spatial computing, 6DOF tracking, 1080p display, 52° FOV, 500 nits brightness",
       description: "Professional AR glasses for spatial computing and immersive development experiences",
-      image: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://img-new.cgtrader.com/items/5191008/869db5109e/xreal-air-2-ultra-3d-model-869db5109e.jpg",
       status: "Available",
       features: [
         "6DOF Tracking",
@@ -67,7 +67,7 @@ const ARVRLabPage = () => {
       quantity: 1,
       specifications: "6.5\" 1080 x 2400 LCD 60Hz Display, 6GB RAM + 128GB Storage, Snapdragon Spatial Companion Processor, Wi-Fi 6 & Bluetooth 5.2",
       description: "Handheld controller for XREAL AR glasses with advanced processing capabilities",
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://www.noypigeeks.com/wp-content/uploads/2024/06/Xreal-Beam-Pro.jpg",
       status: "Available",
       features: [
         "6.5\" 1080p Display",
@@ -84,7 +84,7 @@ const ARVRLabPage = () => {
       quantity: 1,
       specifications: "Force feedback, finger tracking, wireless connectivity, 4 hours battery life",
       description: "Advanced haptic gloves providing realistic touch feedback in virtual environments",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://www.auganix.org/wp-content/uploads/2024/04/SenseGlove-Nova-2-front-and-back.jpg",
       status: "Available",
       features: [
         "Force Feedback",
@@ -101,7 +101,7 @@ const ARVRLabPage = () => {
       quantity: 1,
       specifications: "16 vibration motors, wireless connectivity, 4+ hours battery life, full body haptic feedback",
       description: "Full-body haptic suit providing immersive tactile feedback for VR experiences",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://5.imimg.com/data5/SELLER/Default/2024/11/467111294/YK/XG/PD/14158318/bhaptics-tactsuit-air-16-motor-haptic-suit-1000x1000.jpg",
       status: "Available",
       features: [
         "16 Vibration Motors",
@@ -118,7 +118,7 @@ const ARVRLabPage = () => {
       quantity: 1,
       specifications: "Full body motion tracking, headcam integration, real-time capture, professional grade",
       description: "Complete motion capture system for realistic character animation and movement tracking",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://assets-global.website-files.com/5e6b63ac3b6e253f11889f39/64bf9b3a920188ee5effa41a_Headrig1_2048x1365px.jpg",
       status: "Available",
       features: [
         "Full Body Tracking",

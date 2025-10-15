@@ -61,9 +61,7 @@ const BackgroundVideo = () => {
           </p>
           
           <div className="hero-buttons">
-            <Link href="/jobs" className="btn-primary">
-              Talk to Us
-            </Link>
+          
             <Link href="/products" className="btn-primary bg-orange-600">
               Browse our Expertise
             </Link>

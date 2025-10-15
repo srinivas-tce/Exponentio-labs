@@ -16,7 +16,7 @@ const FullStackLabPage = () => {
       quantity: 2,
       specifications: "12th gen Intel/AMD processor, 32GB RAM, dual monitor setup, mechanical keyboard",
       description: "Complete development workstation optimized for full-stack development",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://raygun.com/blog/wp-content/uploads/2014/06/Anthony-Acosta.jpg",
       status: "Available",
       features: ["12th Gen CPU", "32GB RAM", "Dual Monitor", "Mechanical Keyboard", "Development Ready"]
     },
@@ -27,7 +27,7 @@ const FullStackLabPage = () => {
       quantity: 1,
       specifications: "High-end GPU with 16GB VRAM for AI/ML workloads and graphics processing",
       description: "Powerful GPU for machine learning, graphics rendering, and parallel processing",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://res.cloudinary.com/dmwxtja1g/image/upload/c_lpad,dpr_1.0,f_auto,q_80/v1/media/catalog/product/d/e/dell_nvidia_tesla_v100_16gb_fh_graphics_accelerator_900-2g500-0000-000_angle_zoom_1.jpg?_i=AB",
       status: "Available",
       features: ["16GB VRAM", "High-end GPU", "AI/ML Ready", "Graphics Processing", "Parallel Computing"]
     },
@@ -38,7 +38,7 @@ const FullStackLabPage = () => {
       quantity: 1,
       specifications: "Domain subscriptions, API credits, database setup costs, development tools",
       description: "Complete software stack including development tools, APIs, and cloud services",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse3.mm.bing.net/th/id/OIP._NlC6LQm_ZvaAOyeuaiw1QAAAA?pid=Api&P=0&h=180",
       status: "Available",
       features: ["Domain Subscriptions", "API Credits", "Database Setup", "Development Tools", "Cloud Services"]
     }

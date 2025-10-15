@@ -16,7 +16,7 @@ const AgenticAILabPage = () => {
       quantity: 1,
       specifications: "Intel 285K + RTX Pro 4000 24GB, Professional AI system, 64GB RAM, 2TB NVMe SSD",
       description: "High-performance AI workstation optimized for machine learning and deep learning workloads",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://c1.neweggimages.com/productimage/nb1280/83-151-613-08.jpg",
       status: "Available",
       features: ["Intel 285K CPU", "RTX Pro 4000 24GB", "64GB RAM", "2TB NVMe SSD", "AI Optimized"]
     },
@@ -27,7 +27,7 @@ const AgenticAILabPage = () => {
       quantity: 1,
       specifications: "27\" 1440p IPS 99% sRGB, Professional workstation display, 75Hz refresh rate",
       description: "High-resolution professional monitor for AI development and data visualization",
-      image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse4.mm.bing.net/th/id/OIP.go4LYOnb2LycVToN8IjRhQHaFq?pid=Api&P=0&h=180",
       status: "Available",
       features: ["27\" 1440p", "IPS Panel", "99% sRGB", "75Hz Refresh", "Professional Grade"]
     },
@@ -38,7 +38,7 @@ const AgenticAILabPage = () => {
       quantity: 1,
       specifications: "24\" 1080p IPS FreeSync, Secondary display for monitoring training progress",
       description: "Secondary monitor for system monitoring and multi-tasking during AI development",
-      image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+      image: "https://tse2.mm.bing.net/th/id/OIP.LyH-_dwQw8m1swuNZpAo9gHaHa?pid=Api&P=0&h=180",
       status: "Available",
       features: ["24\" 1080p", "IPS Panel", "FreeSync", "Secondary Display", "Multi-tasking"]
     }

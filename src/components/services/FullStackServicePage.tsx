@@ -1,107 +1,148 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Code, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, ShoppingCart, BarChart, MessageCircle, Clock, Target, Award, Database, Smartphone, Globe, CreditCard } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Code, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, ShoppingCart, BarChart, MessageCircle, Clock, Target, Award, Database, Smartphone, Globe, CreditCard, Loader2 } from 'lucide-react';
+
+interface ProjectProposal {
+  id: string;
+  title: string;
+  type: string;
+  duration: string;
+  budget: string;
+  description: string;
+  skills_required: string;
+  eligibility_criteria: any;
+  application_deadline: string;
+  max_applications: number;
+  lab: {
+    name: string;
+    description: string;
+    thumbnail: string;
+  };
+  created_by: {
+    name: string;
+    email: string;
+    thumbnail: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+interface ServiceData {
+  service: {
+    name: string;
+    description: string;
+    lab_name: string;
+    lab_description: string;
+    lab_thumbnail: string;
+  };
+  project_proposals: ProjectProposal[];
+  total_proposals: number;
+}
 
 const FullStackServicePage = () => {
-  const projectProposals = [
-    {
-      title: "MERN Stack E-Commerce Website",
-      type: "E-Commerce Platform",
-      duration: "6 Weeks",
-      budget: "$2,100 USD",
-      description: "Modern, scalable, and secure e-commerce platform with payment integration, product catalog, shopping cart, and order management.",
-      icon: <ShoppingCart className="w-8 h-8 text-blue-600" />,
-      color: "blue",
-      features: [
-        "Responsive user interface with product catalog",
-        "Shopping cart and wishlist functionality",
-        "Customer authentication with JWT",
-        "Payment gateway integration (Stripe/PayPal)",
-        "Admin panel for product and order management",
-        "Real-time order tracking"
-      ],
-      techStack: [
-        "Frontend: React.js, Redux, TailwindCSS",
-        "Backend: Node.js, Express.js",
-        "Database: MongoDB Atlas",
-        "Authentication: JWT / OAuth",
-        "Payments: Stripe or PayPal",
-        "Hosting: Vercel + Render/Heroku"
-      ],
-      timeline: [
-        { phase: "Phase 1", task: "Requirement gathering, UI/UX wireframes", duration: "1 week" },
-        { phase: "Phase 2", task: "Backend API setup, database schema design", duration: "1 week" },
-        { phase: "Phase 3", task: "Frontend integration with backend APIs", duration: "2 weeks" },
-        { phase: "Phase 4", task: "Payment gateway integration and order flow", duration: "1 week" },
-        { phase: "Phase 5", task: "Testing, bug fixes, deployment", duration: "1 week" }
-      ]
-    },
-    {
-      title: "MERN Stack Business Dashboard",
-      type: "Analytics Dashboard",
-      duration: "5 Weeks",
-      budget: "$1,900 USD",
-      description: "Secure, scalable business analytics dashboard with KPIs visualization, user management, sales tracking, and report generation.",
-      icon: <BarChart className="w-8 h-8 text-green-600" />,
-      color: "green",
-      features: [
-        "Modern responsive UI with charts and graphs",
-        "Customizable widgets and filters",
-        "Role-based user access (admin, staff)",
-        "Real-time data updates and notifications",
-        "Exportable reports (CSV, PDF)",
-        "Sales and revenue analysis with time filters"
-      ],
-      techStack: [
-        "Frontend: React.js, Redux, TailwindCSS, Chart.js",
-        "Backend: Node.js, Express.js",
-        "Database: MongoDB Atlas",
-        "Authentication: JWT / OAuth",
-        "Charts: Chart.js/Recharts",
-        "Hosting: Vercel + Render/Heroku"
-      ],
-      timeline: [
-        { phase: "Phase 1", task: "Requirement gathering, UI/UX wireframes", duration: "1 week" },
-        { phase: "Phase 2", task: "Backend API and database schema setup", duration: "1 week" },
-        { phase: "Phase 3", task: "Frontend dashboard with charts and widgets", duration: "2 weeks" },
-        { phase: "Phase 4", task: "Testing, bug fixes, deployment", duration: "1 week" }
-      ]
-    },
-    {
-      title: "MERN Stack Social Media Platform",
-      type: "Social Media SAAS",
-      duration: "6 Weeks",
-      budget: "$2,300 USD",
-      description: "Scalable social media/community platform with real-time chat, posts, comments, user profiles, and content moderation.",
-      icon: <MessageCircle className="w-8 h-8 text-purple-600" />,
-      color: "purple",
-      features: [
-        "Account registration and secure login",
-        "Create, edit, and delete posts (text, images, links)",
-        "Like, comment, and share functionality",
-        "Real-time chat and notifications",
-        "User profiles with followers/following",
-        "Admin panel for content moderation"
-      ],
-      techStack: [
-        "Frontend: React.js, Redux, TailwindCSS",
-        "Backend: Node.js, Express.js, Socket.io",
-        "Database: MongoDB Atlas",
-        "Authentication: JWT / OAuth (Google, Facebook)",
-        "Real-time: Socket.io/WebSockets",
-        "Hosting: Vercel + Render/Heroku"
-      ],
-      timeline: [
-        { phase: "Phase 1", task: "Requirement gathering, UI/UX wireframes", duration: "1 week" },
-        { phase: "Phase 2", task: "Backend APIs, database schema, authentication", duration: "1 week" },
-        { phase: "Phase 3", task: "Core features: posts, comments, likes, profiles", duration: "2 weeks" },
-        { phase: "Phase 4", task: "Real-time chat, notifications, admin moderation", duration: "1 week" },
-        { phase: "Phase 5", task: "Testing, bug fixes, deployment", duration: "1 week" }
-      ]
+  const [serviceData, setServiceData] = useState<ServiceData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const response = await fetch('/api/services/fullstack');
+        if (!response.ok) {
+          throw new Error('Failed to fetch service data');
+        }
+        const data = await response.json();
+        setServiceData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceData();
+  }, []);
+
+  // Helper function to get icon and color for project type
+  const getProjectIconAndColor = (title: string) => {
+    if (title.toLowerCase().includes('e-commerce') || title.toLowerCase().includes('commerce')) {
+      return { icon: <ShoppingCart className="w-8 h-8 text-blue-600" />, color: "blue" };
+    } else if (title.toLowerCase().includes('dashboard') || title.toLowerCase().includes('analytics')) {
+      return { icon: <BarChart className="w-8 h-8 text-green-600" />, color: "green" };
+    } else if (title.toLowerCase().includes('social') || title.toLowerCase().includes('media')) {
+      return { icon: <MessageCircle className="w-8 h-8 text-purple-600" />, color: "purple" };
     }
-  ];
+    return { icon: <Code className="w-8 h-8 text-gray-600" />, color: "gray" };
+  };
+
+  // Helper function to extract features from skills_required
+  const extractFeatures = (skillsRequired: string) => {
+    const skills = skillsRequired.split(',').map(skill => skill.trim());
+    return skills.slice(0, 6); // Limit to 6 features
+  };
+
+  // Helper function to create tech stack from skills
+  const createTechStack = (skillsRequired: string) => {
+    const skills = skillsRequired.split(',').map(skill => skill.trim());
+    return skills.map(skill => {
+      if (skill.toLowerCase().includes('react')) return `Frontend: ${skill}`;
+      if (skill.toLowerCase().includes('node')) return `Backend: ${skill}`;
+      if (skill.toLowerCase().includes('mongo')) return `Database: ${skill}`;
+      if (skill.toLowerCase().includes('jwt') || skill.toLowerCase().includes('auth')) return `Authentication: ${skill}`;
+      return skill;
+    });
+  };
+
+  // Helper function to create timeline from duration
+  const createTimeline = (duration: string) => {
+    const weeks = parseInt(duration.replace(/\D/g, '')) || 4;
+    const phases = Math.min(weeks, 5);
+    const timeline = [];
+    
+    for (let i = 1; i <= phases; i++) {
+      timeline.push({
+        phase: `Phase ${i}`,
+        task: i === 1 ? "Requirement gathering, UI/UX wireframes" :
+              i === 2 ? "Backend API setup, database schema design" :
+              i === 3 ? "Frontend integration with backend APIs" :
+              i === 4 ? "Testing, bug fixes, deployment" :
+              "Final testing and deployment",
+        duration: `${Math.ceil(weeks / phases)} week${Math.ceil(weeks / phases) > 1 ? 's' : ''}`
+      });
+    }
+    return timeline;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-green-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading Full Stack service data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Error loading service data: {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const projectProposals = serviceData?.project_proposals || [];
 
   const features = [
     "Frontend & Backend Development",
@@ -165,8 +206,7 @@ const FullStackServicePage = () => {
               </h1>
             </div>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
-              End-to-end web and application development solutions. From frontend to backend, 
-              we build scalable, modern applications that grow with your business.
+              {serviceData?.service.description || 'End-to-end web and application development solutions. From frontend to backend, we build scalable, modern applications that grow with your business.'}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <div className="bg-white px-4 py-2 rounded-full shadow-sm">
@@ -189,6 +229,11 @@ const FullStackServicePage = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Ready-to-Implement <span className="text-green-600">Project Proposals</span>
+              {projectProposals.length > 0 && (
+                <span className="text-lg font-normal text-gray-500 ml-2">
+                  ({projectProposals.length} available)
+                </span>
+              )}
             </h2>
             <p className="text-xl text-gray-600">
               Comprehensive MERN stack solutions with detailed timelines, budgets, and technical specifications
@@ -196,70 +241,104 @@ const FullStackServicePage = () => {
           </div>
           
           <div className="space-y-12">
-            {projectProposals.map((project, index) => (
-              <div key={index} className={`bg-gradient-to-r from-${project.color}-50 to-${project.color}-100 rounded-2xl p-8 shadow-lg`}>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
-                    <div className="flex items-center mb-4">
-                      {project.icon}
-                      <h3 className="text-2xl font-bold text-gray-900 ml-4">{project.title}</h3>
+            {projectProposals.map((project, index) => {
+              const { icon, color } = getProjectIconAndColor(project.title);
+              const features = extractFeatures(project.skills_required);
+              const techStack = createTechStack(project.skills_required);
+              const timeline = createTimeline(project.duration);
+              
+              return (
+                <div key={project.id || index} className={`bg-gradient-to-r from-${color}-50 to-${color}-100 rounded-2xl p-8 shadow-lg`}>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2">
+                      <div className="flex items-center mb-4">
+                        {icon}
+                        <h3 className="text-2xl font-bold text-gray-900 ml-4">{project.title}</h3>
+                      </div>
+                      <div className="flex flex-wrap gap-4 mb-6">
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Type: {project.type}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Duration: {project.duration}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Budget: {project.budget}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Max Applications: {project.max_applications}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-700 mb-6">{project.description}</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-3">Key Skills Required:</h4>
+                          <ul className="space-y-2">
+                            {features.map((feature, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-1 flex-shrink-0" />
+                                <span className="text-sm text-gray-700">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-3">Technology Stack:</h4>
+                          <ul className="space-y-1">
+                            {techStack.map((tech, idx) => (
+                              <li key={idx} className="text-sm text-gray-600">• {tech}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-4 mb-6">
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Type: {project.type}</span>
-                      </div>
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Duration: {project.duration}</span>
-                      </div>
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Budget: {project.budget}</span>
-                      </div>
-                    </div>
-                    <p className="text-gray-700 mb-6">{project.description}</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div className="space-y-6">
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">Key Features:</h4>
-                        <ul className="space-y-2">
-                          {project.features.map((feature, idx) => (
-                            <li key={idx} className="flex items-start">
-                              <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-1 flex-shrink-0" />
-                              <span className="text-sm text-gray-700">{feature}</span>
-                            </li>
+                        <h4 className="font-semibold text-gray-900 mb-3">Project Timeline:</h4>
+                        <div className="space-y-3">
+                          {timeline.map((phase, idx) => (
+                            <div key={idx} className="bg-white p-3 rounded-lg">
+                              <div className="flex justify-between items-start mb-1">
+                                <span className="text-sm font-medium text-gray-900">{phase.phase}</span>
+                                <span className="text-xs text-gray-500">{phase.duration}</span>
+                              </div>
+                              <p className="text-xs text-gray-600">{phase.task}</p>
+                            </div>
                           ))}
-                        </ul>
+                        </div>
                       </div>
                       
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">Technology Stack:</h4>
-                        <ul className="space-y-1">
-                          {project.techStack.map((tech, idx) => (
-                            <li key={idx} className="text-sm text-gray-600">• {tech}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Project Timeline:</h4>
-                      <div className="space-y-3">
-                        {project.timeline.map((phase, idx) => (
-                          <div key={idx} className="bg-white p-3 rounded-lg">
-                            <div className="flex justify-between items-start mb-1">
-                              <span className="text-sm font-medium text-gray-900">{phase.phase}</span>
-                              <span className="text-xs text-gray-500">{phase.duration}</span>
-                            </div>
-                            <p className="text-xs text-gray-600">{phase.task}</p>
-                          </div>
-                        ))}
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-semibold text-gray-900 mb-2">Application Details:</h4>
+                        <p className="text-sm text-gray-600 mb-2">
+                          Deadline: {new Date(project.application_deadline).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Created by: {project.created_by?.name || 'Lab Facilitator'}
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
+              );
+            })}
+            
+            {projectProposals.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-gray-400 mb-4">
+                  <Code className="w-16 h-16 mx-auto" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No project proposals available
+                </h3>
+                <p className="text-gray-600">
+                  Check back soon for new Full Stack development opportunities
+                </p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>
