@@ -1,0 +1,137 @@
+### USERS TABLE
+
+Columns:
+
+* id (UUID, PK)
+* email (string)
+* name (string)
+* role (enum: student, facilitator, admin)
+* gender (string)
+* thumbnail (string, URL)
+* email_verified_at (datetime)
+* created_at (datetime)
+* updated_at (datetime)
+
+### LABS TABLE
+
+Columns:
+
+* id (UUID, PK)
+* name (string)
+* description (text)
+* category (enum: software, hardware)
+* location (string)
+* capacity (int)
+* thumbnail_url (string)
+* created_at (datetime)
+* updated_at (datetime)
+
+### FACILITATOR_LAB TABLE (join table)
+
+Columns:
+
+* id (UUID, PK)
+* facilitator_id (FK → users.id)
+* lab_id (FK → labs.id)
+* assigned_at (datetime)
+
+### GIGS TABLE
+
+Columns:
+
+* id (UUID, PK)
+* lab_id (FK → labs.id)
+* title (string)
+* description (text)
+* skills_required (text / JSON)
+* eligibility_criteria (JSON)
+* status (enum: open, closed, archived)
+* application_deadline (datetime)
+* max_applications (int)
+* created_by (FK → users.id)
+* created_at (datetime)
+* updated_at (datetime)
+
+### PROPOSALS TABLE
+
+Columns:
+
+* id (UUID, PK)
+* gig_id (FK → gigs.id)
+* lab_id (FK → labs.id)
+* student_id (FK → users.id)
+* title (string)
+* problem_statement (text)
+* approach (text)
+* expected_outcome (text)
+* timeline (text / JSON)
+* equipment_needed (boolean)
+* status (enum: draft, submitted, under_review, approved, rejected)
+* review_comments (text)
+* submitted_at (datetime)
+* reviewed_at (datetime)
+* github_link (string)
+* attachment_url (string)
+* score (float)
+* created_at (datetime)
+* updated_at (datetime)
+
+### EQUIPMENT TABLE
+
+Columns:
+
+* id (UUID, PK)
+* lab_id (FK → labs.id)
+* name (string)
+* serial_number (string, unique)
+* category (string)
+* status (enum: available, requested, allocated, under_maintenance, retired)
+* condition (string)
+* purchase_date (date)
+* cost (decimal)
+* assigned_to (FK → users.id, nullable)
+* last_checked_at (datetime)
+* created_at (datetime)
+* updated_at (datetime)
+
+### EQUIPMENT_REQUEST TABLE
+
+Columns:
+
+* id (UUID, PK)
+* proposal_id (FK → proposals.id)
+* equipment_id (FK → equipment.id)
+* student_id (FK → users.id)
+* facilitator_id (FK → users.id)
+* quantity (int)
+* purpose (text)
+* start_date (date)
+* end_date (date)
+* status (enum: requested, approved, in_use, returned, rejected, closed)
+* approval_comments (text)
+* approved_at (datetime)
+* returned_at (datetime)
+* created_at (datetime)
+* updated_at (datetime)
+
+### NOTIFICATIONS TABLE
+
+Columns:
+
+* id (UUID, PK)
+* user_id (FK → users.id)
+* type (enum: proposal_update, equipment_update, system)
+* title (string)
+* message (text)
+* status (enum: unread, read)
+* created_at (datetime)
+
+### SYNC_LOG TABLE
+
+Columns:
+
+* id (UUID, PK)
+* user_id (FK → users.id)
+* triggered_by (string)
+* data_synced (JSON)
+* synced_at (datetime)

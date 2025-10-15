@@ -1,394 +1,413 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Search, Filter, ExternalLink, ShoppingCart, Eye } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Search, Filter, ExternalLink, Eye, Cpu, Bot, Wifi, Lightbulb, Code, Zap, Shield, Users, RocketIcon, CheckCircle, ArrowRight } from 'lucide-react';
+
+interface Equipment {
+  id: string;
+  name: string;
+  serial_number: string;
+  category: string;
+  status: string;
+  condition: string;
+  purchase_date: string;
+  cost: number;
+  image_url?: string;
+  lab_id: string;
+  lab_name: string;
+  lab_description: string;
+  lab_location: string;
+  lab_capacity: number;
+  assigned_to_user?: {
+    name: string;
+  } | null;
+  last_checked_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Lab {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  location: string;
+  capacity: number;
+  thumbnail_url: string;
+  equipment: Equipment[];
+  icon: React.ReactNode;
+}
 
 const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedLab, setSelectedLab] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
+  const [labs, setLabs] = useState<Lab[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // AR/VR Equipment
-  const arVrEquipment = [
+  // Lab configurations
+  const labConfigs = [
     {
-      id: 1,
-      name: "Meta Quest 3 (512GB)",
-      category: "VR Headset",
-      quantity: 2,
-      specifications: "512GB storage, advanced hand tracking, mixed reality capabilities",
-      price: "₹89,999",
-      image: "https://images.unsplash.com/photo-1592478411213-6153e4c4a8bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "#",
-      status: "Available"
+      id: 'fullstack',
+      name: 'Full Stack Development Lab',
+      icon: <Code className="w-5 h-5 text-blue-600" />,
+      apiEndpoint: '/api/labs/fullstack'
     },
     {
-      id: 2,
-      name: "Ultraleap Leap Motion Controller 2",
-      category: "Motion Controller",
-      quantity: 1,
-      specifications: "Hand tracking, gesture recognition, 150° field of view",
-      price: "₹45,000",
-      image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "https://www.indiamart.com/proddetail/leap-motion-controller-2-2853611760091.html",
-      status: "Available"
+      id: 'agentic-ai',
+      name: 'Agentic AI Development Lab',
+      icon: <Bot className="w-5 h-5 text-purple-600" />,
+      apiEndpoint: '/api/labs/agentic-ai'
     },
     {
-      id: 3,
-      name: "XREAL Air 2 Ultra",
-      category: "AR Developer Glasses",
-      quantity: 1,
-      specifications: "Spatial computing, 6DOF tracking, 1080p display",
-      price: "₹1,25,000",
-      image: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "https://www.designinfo.in/c/games-equipment/ar-augmented-reality/",
-      status: "Available"
+      id: 'ar-vr',
+      name: 'AR/VR & Metaverse Lab',
+      icon: <Cpu className="w-5 h-5 text-indigo-600" />,
+      apiEndpoint: '/api/labs/ar-vr'
+    },
+    {
+      id: 'embedded-iot',
+      name: 'Embedded IoT Development Lab',
+      icon: <Wifi className="w-5 h-5 text-cyan-600" />,
+      apiEndpoint: '/api/labs/embedded-iot'
+    },
+    {
+      id: 'idea-labs',
+      name: 'Innovation & Idea Labs',
+      icon: <Lightbulb className="w-5 h-5 text-yellow-600" />,
+      apiEndpoint: '/api/labs/idea-labs'
+    },
+    {
+      id: 'robotics',
+      name: 'Robotics & Automation Lab',
+      icon: <Zap className="w-5 h-5 text-red-600" />,
+      apiEndpoint: '/api/labs/robotics'
     }
   ];
 
-  // Robotics Equipment
-  const roboticsEquipment = [
-    {
-      id: 8,
-      name: "Intel RealSense Depth Camera D455",
-      category: "Depth Camera",
-      quantity: 2,
-      specifications: "Stereo depth camera, 10m range, global shutter, RGB sensor",
-      price: "₹1,20,000",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "https://www.indiamart.com/proddetail/intel-realsense-depth-camera-d455-2851543788730.html",
-      status: "Available"
-    },
-    {
-      id: 9,
-      name: "Waveshare WAVEGO (PI4 Kit)",
-      category: "Quadruped Robot",
-      quantity: 1,
-      specifications: "12-DOF bionic quadruped, Raspberry Pi 4, ROS support",
-      price: "₹85,000",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "https://hubtronics.in/wavego-pi4-kit",
-      status: "Available"
-    }
-  ];
+  useEffect(() => {
+    const fetchLabsData = async () => {
+      try {
+        const labPromises = labConfigs.map(async (config) => {
+          const response = await fetch(config.apiEndpoint);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch ${config.name}`);
+          }
+          const data = await response.json();
+          
+          return {
+            id: config.id,
+            name: config.name,
+            description: data.lab.description,
+            category: data.lab.category,
+            location: data.lab.location,
+            capacity: data.lab.capacity,
+            thumbnail_url: data.lab.thumbnail_url,
+            equipment: data.equipment.map((item: any) => ({
+              id: item.id,
+              name: item.name,
+              serial_number: item.serial_number,
+              category: item.category,
+              status: item.status,
+              condition: item.condition,
+              purchase_date: item.purchase_date,
+              cost: item.cost,
+              image_url: item.image_url,
+              lab_id: item.lab_id,
+              lab_name: config.name,
+              lab_description: data.lab.description,
+              lab_location: data.lab.location,
+              lab_capacity: data.lab.capacity,
+              assigned_to_user: item.assigned_to_user,
+              last_checked_at: item.last_checked_at,
+              created_at: item.created_at,
+              updated_at: item.updated_at
+            })),
+            icon: config.icon
+          };
+        });
 
-  // Fullstack Development Equipment
-  const fullstackEquipment = [
-    {
-      id: 23,
-      name: "ANT PC Ultra 285K Pro",
-      category: "AI Workstation",
-      quantity: 1,
-      specifications: "Intel 285K + RTX Pro 4000 24GB, Professional AI system",
-      price: "₹3,06,104",
-      image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "https://www.ant-pc.com/workstation/ai-and-deep-learning/ant-pc-pheidole-al700k",
-      status: "Available"
-    },
-    {
-      id: 24,
-      name: "LG 27QN600-B Monitor",
-      category: "Primary Display",
-      quantity: 1,
-      specifications: "27\" 1440p IPS 99% sRGB, Professional workstation display",
-      price: "₹20,895",
-      image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "#",
-      status: "Available"
-    }
-  ];
+        const labData = await Promise.all(labPromises);
+        setLabs(labData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch lab data');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // IDEA Lab Equipment
-  const ideaLabEquipment = [
-    {
-      id: 39,
-      name: "Laser Cutter",
-      category: "Fabrication Equipment",
-      quantity: 2,
-      specifications: "High precision laser cutting for prototyping",
-      price: "₹5,00,000",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "#",
-      status: "Available"
-    },
-    {
-      id: 40,
-      name: "3D Printer",
-      category: "Additive Manufacturing",
-      quantity: 3,
-      specifications: "High resolution 3D printing for rapid prototyping",
-      price: "₹1,50,000",
-      image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      link: "#",
-      status: "Available"
-    }
-  ];
+    fetchLabsData();
+  }, []);
 
-  // Combine all equipment
-  const allEquipment = [
-    ...arVrEquipment,
-    ...roboticsEquipment,
-    ...fullstackEquipment,
-    ...ideaLabEquipment
-  ];
+  // Get all equipment for search
+  const allEquipment = labs.flatMap(lab => lab.equipment);
 
-  const categories = [
-    { id: 'all', name: 'All Equipment', count: allEquipment.length },
-    { id: 'ar-vr', name: 'AR/VR Equipment', count: arVrEquipment.length },
-    { id: 'robotics', name: 'Robotics', count: roboticsEquipment.length },
-    { id: 'fullstack', name: 'Fullstack Development', count: fullstackEquipment.length },
-    { id: 'idea-lab', name: 'IDEA Lab', count: ideaLabEquipment.length }
-  ];
-
-  // Filter equipment based on search and category
+  // Filter equipment based on search and lab
   const filteredEquipment = allEquipment.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.specifications.toLowerCase().includes(searchTerm.toLowerCase());
+                         item.serial_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.lab_name.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = selectedCategory === 'all' || 
-                           (selectedCategory === 'ar-vr' && arVrEquipment.includes(item)) ||
-                           (selectedCategory === 'robotics' && roboticsEquipment.includes(item)) ||
-                           (selectedCategory === 'fullstack' && fullstackEquipment.includes(item)) ||
-                           (selectedCategory === 'idea-lab' && ideaLabEquipment.includes(item));
+    if (selectedLab === 'all') return matchesSearch;
     
-    return matchesSearch && matchesCategory;
+    const lab = labs.find(l => l.id === selectedLab);
+    return matchesSearch && lab && lab.equipment.includes(item);
   });
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'available':
+        return 'text-green-600 bg-green-100';
+      case 'requested':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'allocated':
+        return 'text-blue-600 bg-blue-100';
+      case 'under_maintenance':
+        return 'text-orange-600 bg-orange-100';
+      case 'retired':
+        return 'text-gray-600 bg-gray-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading equipment data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 mb-4">
+            <Shield className="w-12 h-12 mx-auto" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Equipment</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Advanced Lab Equipment & Hardware
+            <h1 className="text-5xl font-bold text-gray-900 mb-6">
+              Explore Our <span className="text-blue-600">Infrastructure</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              Comprehensive AR/VR, Robotics, Fullstack Development, Embedded Systems, Agentic AI, and IDEA Lab equipment for cutting-edge research and development
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
+              State-of-the-art lab equipment and facilities across 6 specialized domains. 
+              From cutting-edge AR/VR technology to advanced robotics and AI workstations.
             </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              {labs.map((lab) => (
+                <div key={lab.id} className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm">
+                  {lab.icon}
+                  <span className="text-sm font-medium text-gray-700">{lab.name}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Bar */}
-            <div className="flex-1">
+      {/* Lab Categories Overview */}
+      <section className="hidden py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Our <span className="text-blue-600">Lab Facilities</span>
+            </h2>
+            <p className="text-xl text-gray-600">
+              Specialized laboratories equipped with cutting-edge technology
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {labs.map((lab) => (
+              <div key={lab.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div className="h-48 bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                  {lab.icon}
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{lab.name}</h3>
+                  <p className="text-gray-600 mb-4">{lab.description}</p>
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <span>{lab.location}</span>
+                    <span>{lab.equipment.length} equipment items</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Search and Filter */}
+      <section className="py-8 bg-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex-1 max-w-md">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="Search equipment, specifications, or categories..."
+                  placeholder="Search equipment..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
-
-            {/* Category Filter */}
-            <div className="lg:w-64">
+            
+            <div className="flex gap-4">
               <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={selectedLab}
+                onChange={(e) => setSelectedLab(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                {categories.map(category => (
-                  <option key={category.id} value={category.id}>
-                    {category.name} ({category.count})
-                  </option>
+                <option value="all">All Labs</option>
+                {labs.map((lab) => (
+                  <option key={lab.id} value={lab.id}>{lab.name}</option>
                 ))}
               </select>
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`px-4 py-3 rounded-lg border ${
-                  viewMode === 'grid' 
-                    ? 'bg-blue-500 text-white border-blue-500' 
-                    : 'bg-white text-gray-700 border-gray-300'
-                }`}
-              >
-                Grid
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`px-4 py-3 rounded-lg border ${
-                  viewMode === 'list' 
-                    ? 'bg-blue-500 text-white border-blue-500' 
-                    : 'bg-white text-gray-700 border-gray-300'
-                }`}
-              >
-                List
-              </button>
+              
+              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`px-3 py-2 ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                >
+                  Grid
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`px-3 py-2 ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                >
+                  List
+                </button>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Showing {filteredEquipment.length} of {allEquipment.length} equipment items
-          </p>
-        </div>
-
-        {/* Equipment Grid/List */}
-        <div className={`${
-          viewMode === 'grid' 
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
-            : 'space-y-4'
-        }`}>
-          {filteredEquipment.map((item) => (
-            <div
-              key={item.id}
-              className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${
-                viewMode === 'list' ? 'flex items-center p-6' : 'p-6'
-              }`}
-            >
-              {viewMode === 'grid' ? (
-                <>
-                  {/* Grid View */}
-                  <div className="aspect-w-16 aspect-h-9 mb-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                        {item.category}
-                      </span>
-                      <span className={`text-sm font-medium px-2 py-1 rounded ${
-                        item.status === 'Available' 
-                          ? 'text-green-600 bg-green-50' 
-                          : 'text-red-600 bg-red-50'
-                      }`}>
-                        {item.status}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
-                      {item.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {item.specifications}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-gray-900">
-                        {item.price}
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        Qty: {item.quantity}
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <button className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                        <ShoppingCart className="w-4 h-4" />
-                        Request
-                      </button>
-                      <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      {item.link !== '#' && (
-                        <a
-                          href={item.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* List View */}
-                  <div className="w-32 h-24 flex-shrink-0">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  </div>
-                  <div className="flex-1 ml-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                          {item.category}
-                        </span>
-                        <span className={`text-sm font-medium px-2 py-1 rounded ${
-                          item.status === 'Available' 
-                            ? 'text-green-600 bg-green-50' 
-                            : 'text-red-600 bg-red-50'
-                        }`}>
-                          {item.status}
-                        </span>
-                      </div>
-                      <span className="text-2xl font-bold text-gray-900">
-                        {item.price}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {item.name}
-                    </h3>
-                    <p className="text-gray-600 mb-3">
-                      {item.specifications}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">
-                        Quantity Available: {item.quantity}
-                      </span>
-                      <div className="flex gap-2">
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-                          <ShoppingCart className="w-4 h-4" />
-                          Request Equipment
-                        </button>
-                        <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
-                          <Eye className="w-4 h-4" />
-                          View Details
-                        </button>
-                        {item.link !== '#' && (
-                          <a
-                            href={item.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            Source
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* No Results */}
-        {filteredEquipment.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Search className="w-16 h-16 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No equipment found
-            </h3>
+      {/* Equipment Grid */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Available Equipment
+            </h2>
             <p className="text-gray-600">
-              Try adjusting your search terms or category filter
+              {filteredEquipment.length} equipment items found
             </p>
           </div>
-        )}
-      </div>
+
+          <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+            {filteredEquipment.map((item) => (
+              <div key={item.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                  {item.image_url ? (
+                    <img 
+                      src={item.image_url} 
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div className="w-full h-full flex items-center justify-center" style={{ display: item.image_url ? 'none' : 'flex' }}>
+                    <Zap className="w-16 h-16 text-gray-400" />
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
+                      {item.status}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 mb-2">{item.category}</p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Serial: {item.serial_number}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">
+                      Lab: {item.lab_name}
+                    </span>
+                    <div className="flex gap-2">
+                      <Link 
+                        href={`/equipment/${item.id}`}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                      >
+                        <Eye className="w-4 h-4" />
+                        View Details
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* No Results */}
+          {filteredEquipment.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <Search className="w-16 h-16 mx-auto" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No equipment found
+              </h3>
+              <p className="text-gray-600">
+                Try adjusting your search terms or lab filter
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-blue-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl font-bold text-white mb-4">
+            Ready to Access Our Infrastructure?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8">
+            Contact us to learn more about our lab facilities and equipment availability
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center">
+              Contact Us
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </button>
+            <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+              Schedule Lab Tour
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

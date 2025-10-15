@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import BackgroundVideo from './BackgroundVideo';
 import ContactForm from './ContactForm';
+import { useAuthStore } from '@/store/authStore';
 import { 
   Search, 
   Briefcase, 
@@ -27,10 +28,222 @@ import {
   Award,
   Lock,
   Eye,
-  MessageCircle
+  MessageCircle,
+  Bot,
+  Cpu, Code,
+  Wifi,
+  Lightbulb,
+  RocketIcon
+  
 } from 'lucide-react';
 
+// Interactive Timeline Component
+const InteractiveTimeline = () => {
+  const [visibleSteps, setVisibleSteps] = useState<number[]>([]);
+  const [progress, setProgress] = useState(0);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  const timelineSteps = [
+    {
+      date: "Week 1",
+      title: "Start of Evaluation",
+      description: "Preparation",
+      icon: "🚀"
+    },
+    {
+      date: "Week 2", 
+      title: "Initial Scoping",
+      description: "Data checking",
+      icon: "✓"
+    },
+    {
+      date: "Week 3",
+      title: "Validation", 
+      description: "Completed proof of concept",
+      icon: "✓"
+    },
+    {
+      date: "Week 4",
+      title: "Contracting",
+      description: "Signed Contract",
+      icon: "📝"
+    },
+    {
+      date: "Week 5",
+      title: "Development",
+      description: "Agile development process",
+      icon: "⚡"
+    },
+    {
+      date: "Week 6",
+      title: "Deployment",
+      description: "Launch & Support",
+      icon: "🌐"
+    }
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!timelineRef.current) return;
+
+      const timeline = timelineRef.current;
+      const rect = timeline.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Calculate how much of the timeline is visible
+      const timelineTop = rect.top;
+      const timelineHeight = rect.height;
+      const viewportCenter = windowHeight / 2;
+      
+      // Calculate progress based on scroll position
+      const scrollProgress = Math.max(0, Math.min(1, (viewportCenter - timelineTop) / timelineHeight));
+      setProgress(scrollProgress);
+      
+      // Determine which steps should be visible based on scroll position
+      const newVisibleSteps: number[] = [];
+      const stepCount = timelineSteps.length;
+      
+      for (let i = 0; i < stepCount; i++) {
+        const stepThreshold = (i + 1) / stepCount;
+        if (scrollProgress >= stepThreshold - 0.1) {
+          newVisibleSteps.push(i);
+        }
+      }
+      
+      setVisibleSteps(newVisibleSteps);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial call
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <section className="py-20 bg-white" ref={timelineRef}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            How We <span className="text-green-600">Work</span>
+          </h2>
+          <p className="text-xl text-gray-600">
+            Our proven process from idea to deployment
+          </p>
+        </div>
+
+        <div className="relative">
+          {/* Main Timeline Container */}
+          <div className="relative">
+            {/* Timeline Line */}
+            <div className="absolute top-12 left-0 right-0 h-1 bg-gray-200 rounded-full">
+              <div 
+                className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${progress * 100}%` }}
+              ></div>
+            </div>
+
+            {/* Timeline Steps */}
+            <div className="flex justify-between items-start relative z-10">
+              {timelineSteps.map((item, index) => {
+                const isVisible = visibleSteps.includes(index);
+                const isCompleted = visibleSteps.includes(index);
+                
+                return (
+                  <div key={index} className="flex flex-col items-center text-center max-w-32">
+                    {/* Date */}
+                    <div className="mb-2">
+                      <span className={`text-sm font-bold transition-colors duration-500 ${
+                        isCompleted ? 'text-green-600' : 'text-gray-500'
+                      }`}>
+                        {item.date}
+                      </span>
+                    </div>
+
+                    {/* Timeline Node */}
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg mb-3 transition-all duration-700 transform ${
+                      isCompleted 
+                        ? 'bg-green-500 scale-110' 
+                        : 'bg-gray-300 scale-100'
+                    } ${isVisible ? 'animate-pulse' : ''}`}>
+                      {isCompleted ? item.icon : '○'}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className={`text-sm font-bold mb-1 leading-tight transition-all duration-500 ${
+                      isVisible ? 'text-gray-900' : 'text-gray-400'
+                    }`}>
+                      {item.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className={`text-xs leading-tight transition-all duration-500 ${
+                      isVisible ? 'text-gray-500' : 'text-gray-300'
+                    }`}>
+                      {item.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Flag Markers */}
+            <div className="mt-8 space-y-6">
+              {/* Flag 1 - Between Week 1 and Week 2 */}
+              <div className={`flex items-center ml-16 transition-all duration-700 ${
+                visibleSteps.length >= 2 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+              }`}>
+                <div className="w-0 h-0 border-l-4 border-l-green-500 border-t-2 border-t-transparent border-b-2 border-b-transparent mr-3"></div>
+                <div className="flex items-center">
+                  <div className="w-1 h-8 bg-gray-300 mr-3"></div>
+                  <div>
+                    <div className="text-sm font-bold text-gray-900">Client Meeting</div>
+                    <div className="text-xs text-gray-500">Zoom video call with team</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Flag 2 - Between Week 4 and Week 5 */}
+              <div className={`flex items-center ml-32 transition-all duration-700 ${
+                visibleSteps.length >= 5 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+              }`}>
+                <div className="w-0 h-0 border-l-4 border-l-red-500 border-t-2 border-t-transparent border-b-2 border-b-transparent mr-3"></div>
+                <div className="flex items-center">
+                  <div className="w-1 h-8 bg-gray-300 mr-3"></div>
+                  <div>
+                    <div className="text-sm font-bold text-gray-900">Milestone Review</div>
+                    <div className="text-xs text-gray-500">Progress assessment & feedback</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Indicator */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center space-x-4 bg-gray-50 px-6 py-3 rounded-full">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-700">Completed</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-700">Upcoming</span>
+            </div>
+            <div className="text-sm text-gray-500">
+              <span className="font-semibold text-green-600">
+                {Math.round(progress * 100)}%
+              </span> Complete
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const HomePage = () => {
+  const { isAuthenticated, user } = useAuthStore();
 
   const stats = [
     { number: '50,000+', label: 'Professionals Registered' },
@@ -39,44 +252,45 @@ const HomePage = () => {
     { number: '28+', label: 'States and UT Penetrated' }
   ];
 
-  const gigCategories = [
-    {
-      icon: <Store className="w-12 h-12 text-blue-600" />,
-      title: 'Retail Gigs',
-      description: 'Flexible staffing for retail stores, brand audits, and shelf management.',
-      features: ['Weekend Support', 'Peak Season Staffing', 'Brand Audits', 'Shelf Management']
-    },
-    {
-      icon: <LocationIcon className="w-12 h-12 text-green-600" />,
-      title: 'Field Gigs',
-      description: 'On-ground execution, surveys, and data collection across various locations.',
-      features: ['Market Research', 'Data Collection', 'Field Surveys', 'Location Services']
-    },
-    {
-      icon: <Calendar className="w-12 h-12 text-purple-600" />,
-      title: 'Event Gigs',
-      description: 'Event management, promotion, and support for various occasions.',
-      features: ['Event Setup', 'Promotion', 'Crowd Management', 'Logistics Support']
-    },
-    {
-      icon: <Utensils className="w-12 h-12 text-orange-600" />,
-      title: 'Food & Beverage',
-      description: 'Restaurant support, food delivery, and catering services.',
-      features: ['Kitchen Support', 'Delivery', 'Catering', 'Food Service']
-    },
-    {
-      icon: <Truck className="w-12 h-12 text-red-600" />,
-      title: 'Logistics Gigs',
-      description: 'Delivery, warehousing, and supply chain support services.',
-      features: ['Last Mile Delivery', 'Warehouse Support', 'Inventory Management', 'Supply Chain']
-    },
-    {
-      icon: <Headphones className="w-12 h-12 text-indigo-600" />,
-      title: 'Customer Support',
-      description: 'Remote and on-site customer service and support roles.',
-      features: ['Call Center', 'Chat Support', 'Technical Support', 'Customer Service']
-    }
-  ];
+
+const gigCategories = [
+  {
+    icon: <Cpu className="w-12 h-12 text-blue-600" />,
+    title: 'Agentic AI',
+    description: 'Building intelligent, autonomous systems that think, act, and adapt.',
+    features: ['Autonomous Systems', 'Smart Decision-Making', 'Predictive AI', 'Adaptive Models']
+  },
+  {
+    icon: <Code className="w-12 h-12 text-green-600" />,
+    title: 'Full Stack Development',
+    description: 'End-to-end web and app solutions, from idea to deployment.',
+    features: ['Frontend & Backend', 'API Development', 'Database Integration', 'Responsive Design']
+  },
+  {
+    icon: <img src="https://www.inevitable-infotech.com/wp-content/uploads/2024/05/AR-VR-Testing-Services_Vector-Image.svg" className="w-50 h-12 text-purple-600" />,
+    title: 'AR / VR & Metaverse',
+    description: 'Immersive experiences that blend reality with imagination.',
+    features: ['AR Apps', 'VR Experiences', 'Metaverse Integration', '3D Simulations']
+  },
+  {
+    icon: <Bot className="w-12 h-12 text-orange-600" />,
+    title: 'Robotics',
+    description: 'Smart machines engineered for precision and efficiency.',
+    features: ['Automation', 'Industrial Robotics', 'AI-Powered Robotics', 'Robotic Design']
+  },
+  {
+    icon: <Wifi />,
+    title: 'Embedded & IoT',
+    description: 'Connected devices driving real-time insights and automation.',
+    features: ['IoT Devices', 'Embedded Systems', 'Sensor Networks', 'Automation Solutions']
+  },
+  {
+    icon: <Lightbulb className="w-12 h-12 text-indigo-600" />,
+    title: 'Idea Labs',
+    description: 'From spark to prototype, we transform bold ideas into reality.',
+    features: ['Prototyping', 'Innovation', 'Product Design', 'MVP Development']
+  }
+];
 
   const reasons = [
     {
@@ -105,7 +319,7 @@ const HomePage = () => {
       description: 'Scale up or down based on your business requirements instantly.'
     },
     {
-      icon: <Award className="w-8 h-8 text-indigo-600" />,
+      icon: <Lightbulb className="w-8 h-8 text-indigo-600" />,
       title: 'Quality Assurance',
       description: 'Maintain high service quality with our performance monitoring system.'
     }
@@ -115,7 +329,7 @@ const HomePage = () => {
     {
       name: 'Sarah Johnson',
       role: 'Store Manager, Retail Chain',
-      content: 'Exponentio Labs has been a game-changer for our research and development needs. The equipment and support are professional and reliable.',
+      content: 'Exponential Labs has been a game-changer for our research and development needs. The equipment and support are professional and reliable.',
       rating: 5,
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
     },
@@ -210,17 +424,10 @@ const HomePage = () => {
   ];
 
   const companies = [
-    { name: 'Google', logo: 'https://logo.clearbit.com/google.com' },
-    { name: 'Microsoft', logo: 'https://logo.clearbit.com/microsoft.com' },
-    { name: 'Amazon', logo: 'https://logo.clearbit.com/amazon.com' },
-    { name: 'Facebook', logo: 'https://logo.clearbit.com/facebook.com' },
-    { name: 'Apple', logo: 'https://logo.clearbit.com/apple.com' },
-    { name: 'Netflix', logo: 'https://logo.clearbit.com/netflix.com' },
-    { name: 'Uber', logo: 'https://logo.clearbit.com/uber.com' },
-    { name: 'Airbnb', logo: 'https://logo.clearbit.com/airbnb.com' },
-    { name: 'Spotify', logo: 'https://logo.clearbit.com/spotify.com' },
-    { name: 'Tesla', logo: 'https://logo.clearbit.com/tesla.com' },
-    { name: 'PayPal', logo: 'https://logo.clearbit.com/paypal.com' }
+    { name: 'Inunity', logo: 'https://inunity.in/wp-content/uploads/2022/06/InUnity-Full-Logo-2.png' },
+    { name: 'Abhyudaya Softech', logo: 'https://www.abhyudayasw.com/_next/image?url=%2Flogo.png&w=640&q=75' },
+    { name: 'Surya IQ Academy', logo: 'https://www.suryaiqacademy.com/_next/image?url=%2Flogo.jpg&w=48&q=75' },
+    {name: "Honnathi Fab Technologies", logo: "https://www.honnathifabtech.com/images/resources/Logo%202-1.png"}
   ];
 
   return (
@@ -228,16 +435,79 @@ const HomePage = () => {
       {/* Hero Section with Background Video */}
       <BackgroundVideo />
 
+      {/* User Welcome Section (if authenticated) */}
+      {isAuthenticated && user && (
+        <section className="py-8 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <div className="flex items-center justify-center space-x-4 mb-4">
+                {user.thumbnail ? (
+                  <img
+                    src={user.thumbnail}
+                    alt={user.name || 'User'}
+                    className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
+                  />
+                ) : (
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                    <span className="text-white text-2xl font-bold">
+                      {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </span>
+                  </div>
+                )}
+                <div className="text-left">
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    Welcome back, <span className='text-blue-600'>{user.name || 'User'}</span>!
+                  </h2>
+                  <p className="text-lg text-gray-600 capitalize">
+                    {user.role || 'User'} • Exponential Labs
+                  </p>
+                </div>
+              </div>
+              <div className="flex justify-center space-x-4">
+                <Link
+                  href="/profile"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  View Profile
+                </Link>
+                <Link
+                  href="/services"
+                  className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium border border-blue-600 hover:bg-blue-50 transition-colors"
+                >
+                  Browse Gigs
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Welcome Section */}
-      <section className="py-20 bg-white">
+      <section className="py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Welcome to Exponentio Labs
+          <div className="text-center">
+            <h2 className="text-4xl font-medium text-gray-900 mb-4">
+              Welcome to <span className='text-blue-600 font-bold'>Exponential Labs</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Your one-stop platform for connecting with skilled gig workers and accessing cutting-edge lab equipment for your projects.
+             Looking for a Skilled Young Team to take your idea from Zero to Hero? We build MVPs that launch fast and grow strong.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Powered By Section */}
+      <section className="py-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-gray-500 mb-6">Powered By</h3>
+            <div className="flex justify-center items-center">
+              <img 
+                src="https://www.mphasis.com/content/dam/mphasis-com/global/logo/mphasis-logo.png" 
+                alt="Mphasis Logo" 
+                className="h-12 w-auto opacity-70 hover:opacity-100 transition-opacity duration-300"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -247,10 +517,10 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Discover Your Perfect Gig Worker!
+              Find the <span className='text-orange-600 font-bold'>Team</span> That Gets <span className='text-blue-600 font-bold'>Your Project</span> Shipped 🚀
             </h2>
             <p className="text-xl text-gray-600">
-              Choose from our diverse range of gig categories
+             Domains We Power with Industry-Updated Technologies
             </p>
           </div>
           
@@ -262,7 +532,7 @@ const HomePage = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">{category.title}</h3>
                 <p className="text-gray-600 mb-6">{category.description}</p>
-                <ul className="space-y-2">
+                <ul className="space-y-2 mb-6">
                   {category.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center text-sm text-gray-600">
                       <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
@@ -270,6 +540,20 @@ const HomePage = () => {
                     </li>
                   ))}
                 </ul>
+                <div className="flex space-x-3">
+                  <Link
+                    href={`/services/${category.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
+                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center"
+                  >
+                    View Services
+                  </Link>
+                  <Link
+                    href={`/labs/${category.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
+                    className="flex-1 border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors text-center"
+                  >
+                    Explore Labs
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -327,67 +611,63 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Stats Section with Circles */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center">
-            <div className="relative flex items-center justify-center">
-              {/* First Circle - Pink */}
-              <div className="w-48 h-48 bg-pink-500 rounded-full flex flex-col items-center justify-center text-white shadow-lg z-10 relative">
-                <div className="text-4xl font-bold">39000+</div>
-                <div className="text-sm font-medium text-center px-4">GIG WORKERS REGISTERED</div>
-              </div>
-              
-              {/* Second Circle - Pink/Magenta */}
-              <div className="w-48 h-48 bg-pink-600 rounded-full flex flex-col items-center justify-center text-white shadow-lg z-20 relative -ml-8">
-                <div className="text-4xl font-bold">7500+</div>
-                <div className="text-sm font-medium text-center px-4">PINCODES PENETRATED</div>
-              </div>
-              
-              {/* Third Circle - Dark Red */}
-              <div className="w-48 h-48 bg-red-700 rounded-full flex flex-col items-center justify-center text-white shadow-lg z-30 relative -ml-8">
-                <div className="text-4xl font-bold">2000+</div>
-                <div className="text-sm font-medium text-center px-4">CITIES PENETRATED</div>
-              </div>
-              
-              {/* Fourth Circle - Darkest Red */}
-              <div className="w-48 h-48 bg-red-800 rounded-full flex flex-col items-center justify-center text-white shadow-lg z-40 relative -ml-8">
-                <div className="text-4xl font-bold">34+</div>
-                <div className="text-sm font-medium text-center px-4">STATES AND UT PENETRATED</div>
-              </div>
-            </div>
-          </div>
+     
+  {/* Stats Section with Circles */}
+{/* Reasons Why Employers Choose Exponential Labs */}
+<section className="py-20 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        Why Choose Exponential Labs?
+      </h2>
+      <p className="text-xl text-gray-600">
+        The edge that makes us your perfect innovation partner
+      </p>
+    </div>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Reason 1 */}
+      <div className="text-center">
+        <div className="mb-6 flex justify-center text-indigo-600">
+          <Cpu className="w-12 h-12" />
         </div>
-      </section>
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Future-Ready Infrastructure</h3>
+        <p className="text-gray-600">
+          AR/VR labs, robotics kits, embedded systems, AI workstations, and idea labs equipped for real-world innovation.
+        </p>
+      </div>
+      
+      {/* Reason 2 */}
+      <div className="text-center">
+        <div className="mb-6 flex justify-center text-green-600">
+          <Users className="w-12 h-12" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Skilled Young Technologists</h3>
+        <p className="text-gray-600">
+          A growing pool of passionate engineers trained on industry-updated tools and technologies.
+        </p>
+      </div>
+      
+      {/* Reason 3 */}
+      <div className="text-center">
+        <div className="mb-6 flex justify-center text-red-600">
+          <RocketIcon className="w-12 h-12" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Idea to MVP Acceleration</h3>
+        <p className="text-gray-600">
+          From prototyping to product launch, we help you turn bold ideas into scalable solutions faster.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
-      {/* Reasons Why Employers Choose Exponentio Labs */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Reasons Why Employers Choose Exponentio Labs
-            </h2>
-            <p className="text-xl text-gray-600">
-              Discover what makes us the preferred choice for businesses
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {reasons.map((reason, index) => (
-              <div key={index} className="text-center">
-                <div className="mb-6 flex justify-center">
-                  {reason.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{reason.title}</h3>
-                <p className="text-gray-600">{reason.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
+
+  
 
       {/* Latest Blogs Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="hidden py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -432,6 +712,9 @@ const HomePage = () => {
         </div>
       </section>
 
+      {/* How We Work Timeline */}
+      <InteractiveTimeline />
+
       {/* Contact Form */}
       <ContactForm />
 
@@ -442,20 +725,20 @@ const HomePage = () => {
             Ready to Get Started?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of businesses already using Exponentio Labs
+            Join thousands of businesses already using Exponential Labs
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/register"
+              href="/login"
               className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
               Get Started Free
             </Link>
             <Link
-              href="/jobs"
+              href="/services"
               className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
             >
-              Browse Jobs
+              Our Services
             </Link>
           </div>
         </div>
