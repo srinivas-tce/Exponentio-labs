@@ -42,6 +42,9 @@ export interface AuthActions {
   setError: (error: string | null) => void;
   clearError: () => void;
   syncUserProfile: (userData: any, interests?: Interest[]) => Promise<void>;
+  fetchUserDetails: (token: string, email: string) => Promise<void>;
+  handleFacilitatorProfile: (token: string, email: string) => Promise<void>;
+  handleStudentProfile: (token: string, email: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
@@ -83,11 +86,11 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
       fetchUserDetails: async (token: string, email: string) => {
         try {
-          // Determine if user is facilitator or student based on email
-          const isFacilitator = email.endsWith('@technicalcareer.education');
+          // Determine if user is facilitator/facility-manager or student based on email
+          const isFacilitatorOrManager = email.endsWith('@technicalcareer.education');
           
-          if (isFacilitator) {
-            // Handle facilitator profile check and creation
+          if (isFacilitatorOrManager) {
+            // Handle facilitator/facility-manager profile check and creation
             await get().handleFacilitatorProfile(token, email);
           } else {
             // Handle student profile sync
@@ -103,12 +106,12 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
       handleFacilitatorProfile: async (token: string, email: string) => {
         try {
-          console.log('Handling facilitator profile for:', email);
+          console.log('Handling facilitator/facility-manager profile for:', email);
           
-          // Skip Inpulse user details call for facilitators - they don't exist there
+          // Skip Inpulse user details call for facilitators/facility-managers - they don't exist there
           // Go directly to check/create facilitator profile in our database
           
-          // Try to check if facilitator exists in our database
+          // Try to check if facilitator/facility-manager exists in our database
           let exists = false;
           let existingProfile = null;
           
@@ -116,7 +119,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             const checkResult = await inpulseApiService.checkFacilitatorProfile(email);
             exists = checkResult;
             if (exists) {
-              // Fetch existing facilitator profile from our database
+              // Fetch existing facilitator/facility-manager profile from our database
               const response = await fetch(`/api/internal/users/facilitator?email=${encodeURIComponent(email)}`);
               if (response.ok) {
                 const result = await response.json();
@@ -124,14 +127,14 @@ export const useAuthStore = create<AuthState & AuthActions>()(
               }
             }
           } catch (checkError) {
-            // If check fails (e.g., "record not found"), assume facilitator doesn't exist
-            console.log('Facilitator check failed, will create new profile:', checkError);
+            // If check fails (e.g., "record not found"), assume facilitator/facility-manager doesn't exist
+            console.log('Facilitator/facility-manager check failed, will create new profile:', checkError);
             exists = false;
           }
           
           if (!exists || !existingProfile) {
             // Redirect to facilitator registration form
-            console.log('Facilitator not found, redirecting to registration form');
+            console.log('Facilitator/facility-manager not found, redirecting to registration form');
             set({ isLoading: false });
             
             // Store the email for the registration form
@@ -140,8 +143,8 @@ export const useAuthStore = create<AuthState & AuthActions>()(
               window.location.href = '/facilitator-registration';
             }
           } else {
-            // Use existing facilitator profile
-            console.log('Using existing facilitator profile:', existingProfile);
+            // Use existing facilitator/facility-manager profile
+            console.log('Using existing facilitator/facility-manager profile:', existingProfile);
             
             const user: User = {
               id: existingProfile.id,
@@ -156,9 +159,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             set({ user, isLoading: false });
           }
         } catch (error) {
-          console.error('Error handling facilitator profile:', error);
+          console.error('Error handling facilitator/facility-manager profile:', error);
           set({ 
-            error: error instanceof Error ? error.message : 'Failed to handle facilitator profile',
+            error: error instanceof Error ? error.message : 'Failed to handle facilitator/facility-manager profile',
             isLoading: false 
           });
         }
@@ -187,13 +190,13 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           const syncedUser = await inpulseApiService.syncUserToDatabase(userData, interests || []);
           
           const user: User = {
-            id: syncedUser.id,
-            email: syncedUser.email,
-            name: syncedUser.name,
+            id: syncedUser.user.id,
+            email: syncedUser.user.email,
+            name: syncedUser.user.name,
             role: syncedUser.role,
-            gender: syncedUser.gender,
-            thumbnail: syncedUser.thumbnail,
-            email_verified_at: syncedUser.email_verified_at,
+            gender: syncedUser.user.gender,
+            thumbnail: syncedUser.user.thumbnail,
+            email_verified_at: syncedUser.user.email_verified_at,
             interests: syncedUser.interests || [],
           };
 

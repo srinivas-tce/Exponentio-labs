@@ -19,8 +19,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate email domain for facilitators
-    if (!userData.email.endsWith('@technicalcareer.education')) {
+    // Validate email domain for facilitators/facility-managers
+    // Allow both @technicalcareer.education and other domains for facility-managers
+    const isValidDomain = userData.email.endsWith('@technicalcareer.education') || 
+                         userData.role === 'facility-manager';
+    
+    if (!isValidDomain) {
       return NextResponse.json(
         { 
           status: 'error',
@@ -98,8 +102,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Validate email domain for facilitators
-    if (!email.endsWith('@technicalcareer.education')) {
+    // Check if user exists and get their role to validate domain
+    const existingUser = await supabaseService.getUserByEmail(email);
+    
+    // Validate email domain for facilitators/facility-managers
+    // Allow both @technicalcareer.education and facility-manager roles
+    const isValidDomain = email.endsWith('@technicalcareer.education') || 
+                         existingUser?.role === 'facility-manager';
+    
+    if (!isValidDomain) {
       return NextResponse.json(
         { 
           status: 'error',

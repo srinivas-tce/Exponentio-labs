@@ -127,3 +127,42 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+// PUT /api/internal/users/sync - Update user profile
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { userId, updates } = body;
+
+    if (!userId) {
+      return NextResponse.json(
+        { 
+          status: 'error',
+          message: 'User ID is required',
+          error: 'VALIDATION_ERROR'
+        },
+        { status: 400 }
+      );
+    }
+
+    // Update user profile
+    const updatedUser = await supabaseService.updateUser(userId, updates);
+
+    return NextResponse.json({
+      status: 'success',
+      message: 'User profile updated successfully',
+      data: { user: updatedUser }
+    });
+
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    return NextResponse.json(
+      { 
+        status: 'error',
+        message: 'Failed to update user profile',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}

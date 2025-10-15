@@ -444,20 +444,22 @@ const gigCategories = [
                 {user.thumbnail ? (
                   <img
                     src={user.thumbnail}
-                    alt={user.name}
+                    alt={user.name || 'User'}
                     className="w-16 h-16 rounded-full border-4 border-white shadow-lg"
                   />
                 ) : (
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
-                    <span className="text-white text-2xl font-bold">{user.name.charAt(0)}</span>
+                    <span className="text-white text-2xl font-bold">
+                      {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </span>
                   </div>
                 )}
                 <div className="text-left">
                   <h2 className="text-3xl font-bold text-gray-900">
-                    Welcome back, <span className='text-blue-600'>{user.name}</span>!
+                    Welcome back, <span className='text-blue-600'>{user.name || 'User'}</span>!
                   </h2>
                   <p className="text-lg text-gray-600 capitalize">
-                    {user.role} • Exponential Labs
+                    {user.role || 'User'} • Exponential Labs
                   </p>
                 </div>
               </div>
@@ -469,10 +471,10 @@ const gigCategories = [
                   View Profile
                 </Link>
                 <Link
-                  href="/jobs"
+                  href="/services"
                   className="bg-white text-blue-600 px-6 py-3 rounded-lg font-medium border border-blue-600 hover:bg-blue-50 transition-colors"
                 >
-                  Browse Opportunities
+                  Browse Gigs
                 </Link>
               </div>
             </div>
@@ -530,7 +532,7 @@ const gigCategories = [
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">{category.title}</h3>
                 <p className="text-gray-600 mb-6">{category.description}</p>
-                <ul className="space-y-2">
+                <ul className="space-y-2 mb-6">
                   {category.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center text-sm text-gray-600">
                       <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
@@ -538,6 +540,20 @@ const gigCategories = [
                     </li>
                   ))}
                 </ul>
+                <div className="flex space-x-3">
+                  <Link
+                    href={`/services/${category.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
+                    className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors text-center"
+                  >
+                    View Services
+                  </Link>
+                  <Link
+                    href={`/labs/${category.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`}
+                    className="flex-1 border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors text-center"
+                  >
+                    Explore Labs
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -703,7 +719,7 @@ const gigCategories = [
       <ContactForm />
 
       {/* CTA Section */}
-      <section className="hidden py-20 bg-blue-600">
+      <section className="py-20 bg-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-white mb-4">
             Ready to Get Started?
@@ -713,7 +729,7 @@ const gigCategories = [
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/register"
+              href="/login"
               className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
             >
               Get Started Free

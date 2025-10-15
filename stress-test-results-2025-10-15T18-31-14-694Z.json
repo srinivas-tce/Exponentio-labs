@@ -1,0 +1,194 @@
+[
+  {
+    "api": "Database Test",
+    "endpoint": "/api/test-db",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 5229,
+    "requestsPerSecond": 19.13,
+    "responseTime": {
+      "average": 2461.68,
+      "min": 2037.66,
+      "max": 5187.11,
+      "p50": 2126.44,
+      "p90": 4107.56,
+      "p95": 4551.42,
+      "p99": 5187.11
+    },
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "api": "Labs API",
+    "endpoint": "/api/labs",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 4439,
+    "requestsPerSecond": 22.53,
+    "responseTime": {
+      "average": 1440.66,
+      "min": 554.93,
+      "max": 4438.35,
+      "p50": 1307.01,
+      "p90": 2741.35,
+      "p95": 2900.63,
+      "p99": 4438.35
+    },
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "api": "Full Stack Service",
+    "endpoint": "/api/services/fullstack",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 4777,
+    "requestsPerSecond": 20.94,
+    "responseTime": {
+      "average": 941.89,
+      "min": 704.11,
+      "max": 4775.39,
+      "p50": 731.95,
+      "p90": 1131.62,
+      "p95": 2265.97,
+      "p99": 4775.39
+    },
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "api": "AR/VR Service",
+    "endpoint": "/api/services/ar-vr",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 1148,
+    "requestsPerSecond": 87.11,
+    "responseTime": {
+      "average": 594.95,
+      "min": 559.97,
+      "max": 1142.36,
+      "p50": 589.73,
+      "p90": 612.9,
+      "p95": 615.79,
+      "p99": 1142.36
+    },
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "api": "Robotics Service",
+    "endpoint": "/api/services/robotics",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 1607,
+    "requestsPerSecond": 62.21,
+    "responseTime": {
+      "average": 647.39,
+      "min": 603.33,
+      "max": 1606.55,
+      "p50": 631.13,
+      "p90": 652.87,
+      "p95": 659.1,
+      "p99": 1606.55
+    },
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "api": "Agentic AI Service",
+    "endpoint": "/api/services/agentic-ai",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 1108,
+    "requestsPerSecond": 90.24,
+    "responseTime": {
+      "average": 538.47,
+      "min": 500.1,
+      "max": 1106.62,
+      "p50": 531.35,
+      "p90": 555.86,
+      "p95": 558.96,
+      "p99": 1106.62
+    },
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "api": "Embedded IoT Service",
+    "endpoint": "/api/services/embedded-iot",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 630,
+    "requestsPerSecond": 158.85,
+    "responseTime": {
+      "average": 539.43,
+      "min": 512.42,
+      "max": 628.08,
+      "p50": 537.73,
+      "p90": 560.52,
+      "p95": 563.7,
+      "p99": 628.08
+    },
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "api": "Idea Labs Service",
+    "endpoint": "/api/services/idea-labs",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 1091,
+    "requestsPerSecond": 91.65,
+    "responseTime": {
+      "average": 546.18,
+      "min": 509.88,
+      "max": 1087.96,
+      "p50": 541.8,
+      "p90": 564.78,
+      "p95": 567.21,
+      "p99": 1087.96
+    },
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  }
+]

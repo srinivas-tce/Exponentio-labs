@@ -1,150 +1,103 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Bot, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, Cpu, MapPin, Package, Target, Award, Clock, BarChart, Settings, Eye, Navigation } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bot, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, Cpu, MapPin, Package, Target, Award, Clock, BarChart, Settings, Eye, Navigation, Loader2 } from 'lucide-react';
+
+interface ProjectProposal {
+  id: string;
+  title: string;
+  type: string;
+  duration: string;
+  budget: string;
+  description: string;
+  skills_required: string;
+  eligibility_criteria: any;
+  application_deadline: string;
+  max_applications: number;
+  lab: {
+    name: string;
+    description: string;
+    thumbnail: string;
+  };
+  created_by: {
+    name: string;
+    email: string;
+    thumbnail: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+interface ServiceData {
+  service: {
+    name: string;
+    description: string;
+    lab_name: string;
+    lab_description: string;
+    lab_thumbnail: string;
+  };
+  project_proposals: ProjectProposal[];
+  total_proposals: number;
+}
 
 const RoboticsServicePage = () => {
-  const topProjects = [
-    {
-      title: "AI-Driven Smart Manufacturing Arm",
-      complexity: "8/10",
-      timeline: "16-20 weeks",
-      budget: "$3,000 - $6,000",
-      description: "Develop an intelligent work cell for Industry 4.0 applications using the Cobot Pi 280 collaborative arm. This project moves beyond simple pick-and-place to create a system that uses AI for advanced tasks. The arm will leverage computer vision for automated quality inspection on a simulated assembly line and use reinforcement learning to continuously optimize its own movements for speed and efficiency.",
-      hardware: "Cobot Pi 280 (6-DOF Arm), Raspberry Pi Controller, Vision Camera, Custom End-Effectors",
-      software: "ROS 2 + Python (SDK) + Computer Vision (YOLO) + Reinforcement Learning Frameworks",
-      icon: <Cpu className="w-8 h-8 text-blue-600" />,
-      color: "blue",
-      learningOutcomes: [
-        "Advanced Kinematics: Master motion planning and control for a 6-DOF robotic arm",
-        "AI for Automation: Integrate AI models for intelligent decision-making in manufacturing tasks",
-        "Computer Vision: Implement quality inspection and object recognition using AI vision models",
-        "Reinforcement Learning: Apply reinforcement learning techniques to optimize a robot's physical tasks",
-        "ROS 2 Integration: Utilize open-source APIs and the Robot Operating System (ROS 2) for complex control"
-      ],
-      applications: [
-        "Smart manufacturing and Industry 4.0 initiatives",
-        "Automated quality inspection and control on assembly lines",
-        "Automated lab assistants for pick-and-place tasks",
-        "Healthcare applications like automated medicine dispensing"
-      ]
-    },
-    {
-      title: "Multi-Robot Warehouse Management System",
-      complexity: "8/10",
-      timeline: "24-32 weeks",
-      budget: "$25,000 - $40,000",
-      description: "Scale a single service robot concept into a coordinated fleet for a large-scale warehouse environment. This system replaces basic line-following with advanced SLAM (Simultaneous Localization and Mapping) for dynamic, autonomous navigation. The robots, equipped with load-handling mechanisms, will be coordinated by a central fleet management system that handles task scheduling and path optimization.",
-      hardware: "Fleet of mobile robots, LiDAR/Vision Sensors, Robotic Arms/Conveyors, IoT Gateway, Cloud Servers",
-      software: "ROS 2 + SLAM Navigation + Fleet Management Algorithms + Cloud IoT Platform",
-      icon: <Package className="w-8 h-8 text-green-600" />,
-      color: "green",
-      learningOutcomes: [
-        "Autonomous Navigation: Implement SLAM for dynamic navigation in large-scale layouts",
-        "Robotic Manipulation: Integrate robotic arms or conveyors for autonomous loading and unloading of goods",
-        "Fleet Management: Design and deploy systems for multi-robot coordination and task scheduling",
-        "IoT Integration: Build a cloud-based monitoring system for real-time tracking of inventory and robot status",
-        "Systems Engineering: Learn to scale a single-robot prototype into a robust, multi-agent system"
-      ],
-      applications: [
-        "E-commerce fulfillment and logistics centers",
-        "Automated inventory management",
-        "Manufacturing floor material transport",
-        "Smart factory and supply chain automation"
-      ]
-    },
-    {
-      title: "Smart Campus Delivery Robot",
-      complexity: "7/10",
-      timeline: "12-16 weeks",
-      budget: "$5,000 - $8,000",
-      description: "Using the TurtleBot 4 open-source platform, create an autonomous robot for food and package delivery within a campus environment. The robot will utilize its built-in LiDAR and camera to perform SLAM, allowing it to navigate complex indoor spaces without predefined lines. Delivery locations will be marked with QR codes or AprilTags, which the robot will identify using its vision system to ensure precise drop-offs.",
-      hardware: "TurtleBot 4 Platform, LiDAR, RGB-D Camera, IMU, QR/AprilTag Markers",
-      software: "ROS 2 Navigation Stack + SLAM Algorithms + Computer Vision (OpenCV)",
-      icon: <Navigation className="w-8 h-8 text-purple-600" />,
-      color: "purple",
-      learningOutcomes: [
-        "ROS 2 Programming: Gain hands-on experience with nodes, topics, and services in ROS 2",
-        "SLAM Implementation: Apply SLAM algorithms for autonomous mapping and navigation in a real-world environment",
-        "Multi-Sensor Fusion: Learn to combine data from lidar, cameras, and IMUs for robust localization",
-        "Computer Vision: Use vision-based object recognition to identify location markers for navigation tasks",
-        "Path Planning: Explore and implement obstacle avoidance and path planning algorithms"
-      ],
-      applications: [
-        "Last-mile delivery services",
-        "Logistics within hospitals, hotels, and offices",
-        "Automated food service and hospitality",
-        "Warehouse 'follow-me' picking assistants"
-      ]
-    }
-  ];
+  const [serviceData, setServiceData] = useState<ServiceData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const successMetrics = [
-    {
-      project: "AI-Driven Manufacturing Arm",
-      metrics: [
-        "Achieve >95% accuracy in defect detection using the vision system",
-        "Reduce task completion time by 15% using reinforcement learning optimization",
-        "Publication of the AI model for robotic arm control"
-      ]
-    },
-    {
-      project: "Multi-Robot Warehouse System",
-      metrics: [
-        "Successfully map a 1,000 sq. ft. area using SLAM with less than 5% error",
-        "Achieve a 95% success rate for coordinated, multi-robot delivery tasks without collision",
-        "Develop a novel task scheduling algorithm for a robotic fleet"
-      ]
-    },
-    {
-      project: "Smart Campus Delivery Robot",
-      metrics: [
-        "Attain a 99% recognition rate for QR/AprilTag location markers under various lighting conditions",
-        "Complete 10 consecutive autonomous deliveries to different locations without human intervention",
-        "Contribution to the open-source TurtleBot 4 navigation stack"
-      ]
-    }
-  ];
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const response = await fetch('/api/services/robotics');
+        if (!response.ok) {
+          throw new Error('Failed to fetch service data');
+        }
+        const data = await response.json();
+        setServiceData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const implementationRequirements = [
-    {
-      aspect: "Technical Complexity",
-      manufacturing: "AI/ML + Kinematics + Vision",
-      warehouse: "SLAM + Fleet Mgmt. + IoT",
-      delivery: "SLAM + Sensor Fusion + Vision"
-    },
-    {
-      aspect: "Team Size & Prerequisites",
-      manufacturing: "3-4 students: AI/ML, Python, ROS",
-      warehouse: "5-7 students: ROS, networking, cloud",
-      delivery: "2-4 students: ROS, Linux, Python"
-    },
-    {
-      aspect: "Industry Mentorship",
-      manufacturing: "Automation Engineers",
-      warehouse: "Robotics/Logistics Engineers",
-      delivery: "ROS Developers"
-    },
-    {
-      aspect: "Certification Potential",
-      manufacturing: "ROS-I Certification, NVIDIA AI",
-      warehouse: "AWS/Azure IoT Certification",
-      delivery: "ROS Developer Certification"
-    },
-    {
-      aspect: "Career Paths",
-      manufacturing: "Robotics Automation Engineer",
-      warehouse: "Fleet Operations Specialist",
-      delivery: "Autonomous Systems Developer"
-    },
-    {
-      aspect: "Market Demand",
-      manufacturing: "Very High (Industry 4.0)",
-      warehouse: "Extremely High (Logistics)",
-      delivery: "High (Service Robotics)"
-    }
-  ];
+    fetchServiceData();
+  }, []);
+
+  const handleApplyClick = (gig: ProjectProposal) => {
+    // Navigate to the new apply page
+    window.location.href = `/proposals/apply/${gig.id}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-orange-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading robotics service data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Error loading service data: {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const projectProposals = serviceData?.project_proposals || [];
 
   const features = [
     "Industrial Automation Systems",
@@ -226,147 +179,134 @@ const RoboticsServicePage = () => {
         </div>
       </div>
 
-      {/* Top Projects Section */}
+      {/* Project Proposals Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Top 3 Most Complex <span className="text-orange-600">Robotics Projects</span>
+              Available <span className="text-orange-600">Robotics Projects</span>
             </h2>
             <p className="text-xl text-gray-600">
-              Advanced robotics projects that push the boundaries of autonomous systems and industrial automation
+              Join cutting-edge robotics projects and work with industry experts
             </p>
           </div>
           
+          {projectProposals.length === 0 ? (
+            <div className="text-center py-12">
+              <Bot className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Projects Available</h3>
+              <p className="text-gray-500">Check back later for new robotics project opportunities.</p>
+            </div>
+          ) : (
           <div className="space-y-12">
-            {topProjects.map((project, index) => (
-              <div key={index} className={`bg-gradient-to-r from-${project.color}-50 to-${project.color}-100 rounded-2xl p-8 shadow-lg`}>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
-                    <div className="flex items-center mb-4">
-                      {project.icon}
-                      <h3 className="text-2xl font-bold text-gray-900 ml-4">{project.title}</h3>
+            {projectProposals.map((project, index) => {
+              const icon = <Bot className="w-8 h-8 text-orange-600" />;
+              const features = project.skills_required.split(',').map(skill => skill.trim());
+              
+              return (
+                <div key={project.id || index} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2">
+                      <div className="flex items-center mb-4">
+                        {icon}
+                        <h3 className="text-2xl font-bold text-gray-900 ml-4">{project.title}</h3>
+                      </div>
+                      <div className="flex flex-wrap gap-4 mb-6">
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Type: {project.type}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Duration: {project.duration}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Budget: {project.budget}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Max Applications: {project.max_applications}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-700 mb-6">{project.description}</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-3">Skills Required:</h4>
+                          <ul className="space-y-2">
+                            {features.map((feature, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <CheckCircle className="w-4 h-4 text-orange-500 mr-2 mt-1 flex-shrink-0" />
+                                <span className="text-sm text-gray-700">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-3">Eligibility Criteria:</h4>
+                          <div className="space-y-2">
+                            {project.eligibility_criteria?.prerequisites && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Prerequisites:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.prerequisites.join(', ')}</p>
+                              </div>
+                            )}
+                            {project.eligibility_criteria?.experience_level && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Experience Level:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.experience_level}</p>
+                              </div>
+                            )}
+                            {project.eligibility_criteria?.complexity && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Complexity:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.complexity}/10</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-4 mb-6">
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Complexity: {project.complexity}</span>
-                      </div>
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Timeline: {project.timeline}</span>
-                      </div>
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Budget: {project.budget}</span>
-                      </div>
-                    </div>
-                    <p className="text-gray-700 mb-6">{project.description}</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">Hardware Required:</h4>
-                        <p className="text-sm text-gray-600">{project.hardware}</p>
+                    <div className="space-y-6">
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-semibold text-gray-900 mb-2">Application Details:</h4>
+                        <p className="text-sm text-gray-600 mb-2">
+                          Deadline: {new Date(project.application_deadline).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Created by: {project.created_by?.name || 'Lab Facilitator'}
+                        </p>
+                        
+                        {/* Apply Button */}
+                        <button
+                          onClick={() => handleApplyClick(project)}
+                          className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center font-semibold"
+                        >
+                          <ArrowRight className="w-4 h-4 mr-2" />
+                          Apply for this Gig
+                        </button>
+                        
+                        {/* Additional Info */}
+                        <div className="mt-3 text-xs text-gray-500 text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <Clock className="w-3 h-3 mr-1" />
+                            <span>Deadline: {new Date(project.application_deadline).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center justify-center">
+                            <Users className="w-3 h-3 mr-1" />
+                            <span>Max: {project.max_applications} applications</span>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">Software Stack:</h4>
-                        <p className="text-sm text-gray-600">{project.software}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Learning Outcomes:</h4>
-                      <ul className="space-y-2">
-                        {project.learningOutcomes.map((outcome, idx) => (
-                          <li key={idx} className="flex items-start">
-                            <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-1 flex-shrink-0" />
-                            <span className="text-sm text-gray-700">{outcome}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Industry Applications:</h4>
-                      <ul className="space-y-1">
-                        {project.applications.map((app, idx) => (
-                          <li key={idx} className="text-sm text-gray-600">• {app}</li>
-                        ))}
-                      </ul>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+          )}
         </div>
       </section>
 
-      {/* Success Metrics Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Success <span className="text-orange-600">Metrics</span>
-            </h2>
-            <p className="text-xl text-gray-600">
-              Measurable outcomes that define project success
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {successMetrics.map((metric, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 shadow-md">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{metric.project}</h3>
-                <ul className="space-y-3">
-                  {metric.metrics.map((item, idx) => (
-                    <li key={idx} className="flex items-start">
-                      <Target className="w-5 h-5 text-orange-500 mr-3 mt-1 flex-shrink-0" />
-                      <span className="text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Implementation Requirements Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Implementation <span className="text-orange-600">Requirements</span>
-            </h2>
-            <p className="text-xl text-gray-600">
-              Comprehensive comparison of project requirements and career outcomes
-            </p>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-lg shadow-lg">
-              <thead className="bg-orange-600 text-white">
-                <tr>
-                  <th className="px-6 py-4 text-left font-semibold">Aspect</th>
-                  <th className="px-6 py-4 text-left font-semibold">AI-Driven Mfg. Arm</th>
-                  <th className="px-6 py-4 text-left font-semibold">Warehouse Mgmt. System</th>
-                  <th className="px-6 py-4 text-left font-semibold">Smart Campus Delivery</th>
-                </tr>
-              </thead>
-              <tbody>
-                {implementationRequirements.map((req, index) => (
-                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
-                    <td className="px-6 py-4 font-semibold text-gray-900">{req.aspect}</td>
-                    <td className="px-6 py-4 text-gray-700">{req.manufacturing}</td>
-                    <td className="px-6 py-4 text-gray-700">{req.warehouse}</td>
-                    <td className="px-6 py-4 text-gray-700">{req.delivery}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
 
       {/* Features Section */}
       <section className="py-20 bg-gray-50">

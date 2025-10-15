@@ -1,0 +1,110 @@
+[
+  {
+    "test": "Database Connection Stress",
+    "endpoint": "/api/test-db",
+    "loadPattern": "burst",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 621,
+    "requestsPerSecond": 161.15,
+    "responseTime": {
+      "average": 424.47,
+      "min": 252.82,
+      "max": 567.16,
+      "p50": 443.39,
+      "p90": 549.58,
+      "p95": 559.26,
+      "p99": 567.16,
+      "standardDeviation": 95.25
+    },
+    "performanceGrade": "A",
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "test": "Labs API Load Test",
+    "endpoint": "/api/labs",
+    "loadPattern": "sustained",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 9946,
+    "requestsPerSecond": 10.05,
+    "responseTime": {
+      "average": 47.13,
+      "min": 34.6,
+      "max": 301.4,
+      "p50": 43.07,
+      "p90": 58.51,
+      "p95": 73.21,
+      "p99": 301.4,
+      "standardDeviation": 27.44
+    },
+    "performanceGrade": "A",
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "test": "Service APIs Load Test",
+    "endpoint": "/api/services/fullstack",
+    "loadPattern": "ramp",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 1026,
+    "requestsPerSecond": 97.51,
+    "responseTime": {
+      "average": 74.29,
+      "min": 34.3,
+      "max": 221.72,
+      "p50": 45.49,
+      "p90": 145.13,
+      "p95": 153.91,
+      "p99": 221.72,
+      "standardDeviation": 45.81
+    },
+    "performanceGrade": "A",
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  },
+  {
+    "test": "Proposal Gig Details",
+    "endpoint": "/api/proposals/gig/1fd4c432-bab1-45e3-bdfd-01522edcb89f",
+    "loadPattern": "burst",
+    "totalRequests": 100,
+    "successfulRequests": 100,
+    "failedRequests": 0,
+    "successRate": 100,
+    "totalTestDuration": 2399,
+    "requestsPerSecond": 41.69,
+    "responseTime": {
+      "average": 2250.53,
+      "min": 2101.17,
+      "max": 2386.3,
+      "p50": 2249.16,
+      "p90": 2359.24,
+      "p95": 2368.85,
+      "p99": 2386.3,
+      "standardDeviation": 76.78
+    },
+    "performanceGrade": "C",
+    "statusCodes": {
+      "200": 100
+    },
+    "errorTypes": {},
+    "errors": []
+  }
+]

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, Menu, X, User, LogOut } from 'lucide-react';
+import { Search, Menu, X, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
 const Header = () => {
@@ -30,14 +30,14 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            {/* <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">E</span>
-            </div>
+            </div> */}
             <span className="text-xl font-bold text-gray-900">Exponential Labs</span>
           </Link>
 
           {/* Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-lg mx-8">
+          <div className="md:hidden md:flex flex-1 max-w-lg mx-8">
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative">
                 <input
@@ -112,6 +112,17 @@ const Header = () => {
             >
               Explore Infrastructure
             </Link>
+
+            {/* Dashboard Link for Facilitators and Facility Managers */}
+            {(user?.role === 'facilitator' || user?.role === 'facility-manager') && (
+              <Link
+                href="/facilitator-dashboard"
+                className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
+              >
+                <LayoutDashboard className="w-4 h-4 mr-1" />
+                Dashboard
+              </Link>
+            )}
 
             {/* Authentication Section */}
             {isAuthenticated ? (
@@ -236,6 +247,18 @@ const Header = () => {
               >
                 Explore Infrastructure
               </Link>
+
+              {/* Dashboard Link for Facilitators and Facility Managers */}
+              {(user?.role === 'facilitator' || user?.role === 'facility-manager') && (
+                <Link
+                  href="/facilitator-dashboard"
+                  className="px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md flex items-center"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Dashboard
+                </Link>
+              )}
 
               {/* Mobile Authentication Section */}
               {isAuthenticated ? (

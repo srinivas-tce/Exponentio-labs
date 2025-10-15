@@ -132,6 +132,10 @@ export class SupabaseService {
     gender: string;
     thumbnail: string;
     email_verified_at: string;
+    phone: string;
+    experience: number;
+    department: string;
+    specialization: string;
   }>): Promise<any> {
     const { data, error } = await this.supabase
       .from('users')

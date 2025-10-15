@@ -65,11 +65,35 @@ export async function POST(request: NextRequest) {
     // In a real application, this would come from the authenticated user
     const studentId = 'd27586ec-03ce-4a21-b1f4-7ded1c312d01'; // Placeholder student ID
 
-    // Create equipment request directly (proposal_id is optional)
+    // Create a minimal proposal first since proposal_id is required
+    const { data: proposalData, error: proposalError } = await supabase
+      .from('proposals')
+      .insert({
+        gig_id: '550e8400-e29b-41d4-a716-446655440003', // Use a default gig ID
+        lab_id: equipment.lab_id,
+        student_id: studentId,
+        title: `Equipment Request: ${equipment.name}`,
+        problem_statement: purpose,
+        approach: 'Equipment request for project work',
+        expected_outcome: 'Successful completion of project with required equipment',
+        status: 'draft'
+      })
+      .select()
+      .single();
+
+    if (proposalError) {
+      console.error('Error creating proposal for equipment request:', proposalError);
+      return NextResponse.json(
+        { error: 'Failed to create proposal for equipment request' },
+        { status: 500 }
+      );
+    }
+
+    // Create equipment request with the proposal ID
     const { data: requestData, error: requestError } = await supabase
       .from('equipment_request')
       .insert({
-        proposal_id: null, // Explicitly set to null since it's optional
+        proposal_id: proposalData.id,
         equipment_id,
         student_id: studentId,
         facilitator_id: facilitatorData.facilitator_id,

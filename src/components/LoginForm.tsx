@@ -1,13 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const router = useRouter();
+  const { login, isLoading, error, clearError, user } = useAuthStore();
+
+  // Redirect after successful login
+  useEffect(() => {
+    if (user && !isLoading) {
+      if (user.role === 'facilitator' || user.role === 'facility-manager') {
+        router.push('/facilitator-dashboard');
+      } else if (user.role === 'student') {
+        router.push('/');
+      } else {
+        router.push('/');
+      }
+    }
+  }, [user, isLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

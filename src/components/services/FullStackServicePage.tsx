@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Code, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, ShoppingCart, BarChart, MessageCircle, Clock, Target, Award, Database, Smartphone, Globe, CreditCard, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Code, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, ShoppingCart, BarChart, MessageCircle, Clock, Target, Award, Database, Smartphone, Globe, CreditCard, Loader2, Send, Calendar, User } from 'lucide-react';
+import ProposalSubmissionForm from '@/components/ProposalSubmissionForm';
 
 interface ProjectProposal {
   id: string;
@@ -45,6 +46,8 @@ const FullStackServicePage = () => {
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedGig, setSelectedGig] = useState<ProjectProposal | null>(null);
+  const [showProposalForm, setShowProposalForm] = useState(false);
 
   useEffect(() => {
     const fetchServiceData = async () => {
@@ -65,16 +68,61 @@ const FullStackServicePage = () => {
     fetchServiceData();
   }, []);
 
-  // Helper function to get icon and color for project type
-  const getProjectIconAndColor = (title: string) => {
-    if (title.toLowerCase().includes('e-commerce') || title.toLowerCase().includes('commerce')) {
-      return { icon: <ShoppingCart className="w-8 h-8 text-blue-600" />, color: "blue" };
-    } else if (title.toLowerCase().includes('dashboard') || title.toLowerCase().includes('analytics')) {
-      return { icon: <BarChart className="w-8 h-8 text-green-600" />, color: "green" };
-    } else if (title.toLowerCase().includes('social') || title.toLowerCase().includes('media')) {
-      return { icon: <MessageCircle className="w-8 h-8 text-purple-600" />, color: "purple" };
+  const handleApplyClick = (gig: ProjectProposal) => {
+    // Navigate to the new apply page
+    window.location.href = `/proposals/apply/${gig.id}`;
+  };
+
+  const handleProposalSubmit = async (proposalData: any) => {
+    try {
+      const response = await fetch('/api/proposals/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(proposalData),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit proposal');
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Error submitting proposal:', error);
+      throw error;
     }
-    return { icon: <Code className="w-8 h-8 text-gray-600" />, color: "gray" };
+  };
+
+  const handleCloseProposalForm = () => {
+    setShowProposalForm(false);
+    setSelectedGig(null);
+  };
+
+  // Helper function to get icon for project type
+  const getProjectIcon = (title: string) => {
+    const titleLower = title.toLowerCase();
+    
+    if (titleLower.includes('e-commerce') || titleLower.includes('commerce') || titleLower.includes('shop')) {
+      return <ShoppingCart className="w-8 h-8 text-blue-600" />;
+    } else if (titleLower.includes('dashboard') || titleLower.includes('analytics') || titleLower.includes('admin')) {
+      return <BarChart className="w-8 h-8 text-green-600" />;
+    } else if (titleLower.includes('social') || titleLower.includes('media') || titleLower.includes('chat')) {
+      return <MessageCircle className="w-8 h-8 text-purple-600" />;
+    } else if (titleLower.includes('blog') || titleLower.includes('cms') || titleLower.includes('content')) {
+      return <Database className="w-8 h-8 text-orange-600" />;
+    } else if (titleLower.includes('mobile') || titleLower.includes('app') || titleLower.includes('responsive')) {
+      return <Smartphone className="w-8 h-8 text-indigo-600" />;
+    } else if (titleLower.includes('api') || titleLower.includes('backend') || titleLower.includes('server')) {
+      return <Globe className="w-8 h-8 text-cyan-600" />;
+    } else if (titleLower.includes('payment') || titleLower.includes('finance') || titleLower.includes('billing')) {
+      return <CreditCard className="w-8 h-8 text-emerald-600" />;
+    }
+    
+    // Default fallback
+    return <Code className="w-8 h-8 text-gray-600" />;
   };
 
   // Helper function to extract features from skills_required
@@ -242,13 +290,11 @@ const FullStackServicePage = () => {
           
           <div className="space-y-12">
             {projectProposals.map((project, index) => {
-              const { icon, color } = getProjectIconAndColor(project.title);
-              const features = extractFeatures(project.skills_required);
-              const techStack = createTechStack(project.skills_required);
-              const timeline = createTimeline(project.duration);
+              const icon = <Code className="w-8 h-8 text-green-600" />;
+              const features = project.skills_required.split(',').map(skill => skill.trim());
               
               return (
-                <div key={project.id || index} className={`bg-gradient-to-r from-${color}-50 to-${color}-100 rounded-2xl p-8 shadow-lg`}>
+                <div key={project.id || index} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2">
                       <div className="flex items-center mb-4">
@@ -273,7 +319,7 @@ const FullStackServicePage = () => {
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                          <h4 className="font-semibold text-gray-900 mb-3">Key Skills Required:</h4>
+                          <h4 className="font-semibold text-gray-900 mb-3">Skills Required:</h4>
                           <ul className="space-y-2">
                             {features.map((feature, idx) => (
                               <li key={idx} className="flex items-start">
@@ -285,40 +331,61 @@ const FullStackServicePage = () => {
                         </div>
                         
                         <div>
-                          <h4 className="font-semibold text-gray-900 mb-3">Technology Stack:</h4>
-                          <ul className="space-y-1">
-                            {techStack.map((tech, idx) => (
-                              <li key={idx} className="text-sm text-gray-600">• {tech}</li>
-                            ))}
-                          </ul>
+                          <h4 className="font-semibold text-gray-900 mb-3">Eligibility Criteria:</h4>
+                          <div className="space-y-2">
+                            {project.eligibility_criteria?.prerequisites && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Prerequisites:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.prerequisites.join(', ')}</p>
+                              </div>
+                            )}
+                            {project.eligibility_criteria?.experience_level && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Experience Level:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.experience_level}</p>
+                              </div>
+                            )}
+                            {project.eligibility_criteria?.complexity && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Complexity:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.complexity}/10</p>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
                     
                     <div className="space-y-6">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-3">Project Timeline:</h4>
-                        <div className="space-y-3">
-                          {timeline.map((phase, idx) => (
-                            <div key={idx} className="bg-white p-3 rounded-lg">
-                              <div className="flex justify-between items-start mb-1">
-                                <span className="text-sm font-medium text-gray-900">{phase.phase}</span>
-                                <span className="text-xs text-gray-500">{phase.duration}</span>
-                              </div>
-                              <p className="text-xs text-gray-600">{phase.task}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      
                       <div className="bg-white p-4 rounded-lg">
                         <h4 className="font-semibold text-gray-900 mb-2">Application Details:</h4>
                         <p className="text-sm text-gray-600 mb-2">
                           Deadline: {new Date(project.application_deadline).toLocaleDateString()}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 mb-4">
                           Created by: {project.created_by?.name || 'Lab Facilitator'}
                         </p>
+                        
+                        {/* Apply Button */}
+                        <button
+                          onClick={() => handleApplyClick(project)}
+                          className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center font-semibold"
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Apply for this Gig
+                        </button>
+                        
+                        {/* Additional Info */}
+                        <div className="mt-3 text-xs text-gray-500 text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <Calendar className="w-3 h-3 mr-1" />
+                            <span>Deadline: {new Date(project.application_deadline).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center justify-center">
+                            <User className="w-3 h-3 mr-1" />
+                            <span>Max: {project.max_applications} applications</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -440,6 +507,28 @@ const FullStackServicePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Proposal Submission Form Modal */}
+      {selectedGig && (
+        <ProposalSubmissionForm
+          gig={{
+            id: selectedGig.id,
+            title: selectedGig.title,
+            description: selectedGig.description,
+            skills_required: selectedGig.skills_required,
+            eligibility_criteria: selectedGig.eligibility_criteria,
+            application_deadline: selectedGig.application_deadline,
+            max_applications: selectedGig.max_applications,
+            lab: {
+              id: selectedGig.lab?.id || '',
+              name: selectedGig.lab?.name || ''
+            }
+          }}
+          isOpen={showProposalForm}
+          onClose={handleCloseProposalForm}
+          onSubmit={handleProposalSubmit}
+        />
+      )}
     </div>
   );
 };

@@ -1,111 +1,103 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Cpu, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, Brain, Database, Code, Target, Award, Clock, BarChart, Settings } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Cpu, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, Brain, Database, Code, Target, Award, Clock, BarChart, Settings, Loader2 } from 'lucide-react';
+
+interface ProjectProposal {
+  id: string;
+  title: string;
+  type: string;
+  duration: string;
+  budget: string;
+  description: string;
+  skills_required: string;
+  eligibility_criteria: any;
+  application_deadline: string;
+  max_applications: number;
+  lab: {
+    name: string;
+    description: string;
+    thumbnail: string;
+  };
+  created_by: {
+    name: string;
+    email: string;
+    thumbnail: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+interface ServiceData {
+  service: {
+    name: string;
+    description: string;
+    lab_name: string;
+    lab_description: string;
+    lab_thumbnail: string;
+  };
+  project_proposals: ProjectProposal[];
+  total_proposals: number;
+}
 
 const AgenticAIServicePage = () => {
-  const topProjects = [
-    {
-      title: "Autonomous Scientific Research Acceleration",
-      complexity: "10/10",
-      timeline: "12-16 weeks",
-      budget: "$80,000 - $130,000",
-      description: "Build a comprehensive research automation platform that orchestrates the entire scientific lifecycle. The system coordinates hierarchical agent teams for literature review, hypothesis generation, experiment design, data analysis, and publication preparation.",
-      hardware: "RTX 4090 training server, Synology NAS, enhanced cloud credits",
-      software: "LangGraph + Llama 3.1 + Federated Learning + Academic APIs",
-      icon: <Brain className="w-8 h-8 text-purple-600" />,
-      color: "purple",
-      learningOutcomes: [
-        "Hierarchical Agent Coordination: Master complex workflows with hierarchical agent teams",
-        "Domain-Specific Model Training: Fine-tune large language models like Llama 3.1 for scientific knowledge",
-        "Federated Learning: Implement privacy-preserving learning techniques across institutions",
-        "Large-Scale Data Management: Manage and process petabyte-scale research datasets on a NAS",
-        "Automated Grant & Patent Analysis: Develop agents capable of assisting with grant writing and patent landscape analysis"
-      ],
-      applications: [
-        "Pharmaceutical and biotechnology R&D",
-        "Academic and university research labs", 
-        "Corporate innovation and research divisions",
-        "Governmental scientific agencies"
-      ]
-    },
-    {
-      title: "Autonomous Financial Trading Ecosystem",
-      complexity: "10/10", 
-      timeline: "12-16 weeks",
-      budget: "$90,000 - $150,000",
-      description: "Develop a production-grade algorithmic trading system using multi-agent coordination for market analysis, risk management, and automated execution. This capstone project integrates real-time market data feeds and sophisticated risk controls to operate autonomously.",
-      hardware: "High-frequency inference servers, Synology NAS, enhanced cloud credits",
-      software: "Semantic Kernel + Multi-Agent Orchestration + Real-time Data Feeds + Risk APIs",
-      icon: <TrendingUp className="w-8 h-8 text-green-600" />,
-      color: "green",
-      learningOutcomes: [
-        "Real-time Multi-Agent Coordination: Design agent teams for high-frequency trading decisions",
-        "Financial Risk Management: Implement models for portfolio optimization, exposure monitoring, and stress testing",
-        "High-Frequency Model Inference: Utilize cloud infrastructure for real-time model predictions",
-        "Enterprise Integration: Use Semantic Kernel to integrate with existing trading infrastructure",
-        "Automated Regulatory Compliance: Build agents to manage audit trails and monitor regulatory requirements"
-      ],
-      applications: [
-        "Hedge funds and asset management firms",
-        "Investment banking algorithmic trading desks",
-        "Financial technology (FinTech) and RegTech startups",
-        "Quantitative analysis and portfolio management"
-      ]
-    },
-    {
-      title: "Autonomous Code Migration System",
-      complexity: "9/10",
-      timeline: "12-14 weeks", 
-      budget: "$50,000 - $80,000",
-      description: "Create a large-scale platform for codebase modernization using AutoGen's actor model architecture. The system automatically analyzes legacy code, maps dependencies, plans migration strategies, and generates modernized implementations.",
-      hardware: "Additional workstations, 10GbE networking, VMware virtualization",
-      software: "AutoGen + Distributed Systems + Static Code Analysis + CI/CD Tools",
-      icon: <Code className="w-8 h-8 text-blue-600" />,
-      color: "blue",
-      learningOutcomes: [
-        "Distributed Agent Architecture: Implement AutoGen's actor model for parallel processing",
-        "Large-Scale Codebase Analysis: Develop agents for pattern recognition and dependency mapping in massive codebases",
-        "Automated Code Generation: Build agents that write modernized code and testing harnesses",
-        "Cross-Language Migration: Design strategies for migrating between different technology stacks",
-        "Automated Validation & Testing: Deploy agents to verify functionality and performance of migrated code"
-      ],
-      applications: [
-        "Enterprise IT modernization and digital transformation",
-        "Cloud migration services and consulting",
-        "Technical debt reduction in large software companies",
-        "Legacy system maintenance and support"
-      ]
-    }
-  ];
+  const [serviceData, setServiceData] = useState<ServiceData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const successMetrics = [
-    {
-      project: "Scientific Research",
-      metrics: [
-        "Achieve >90% accuracy on specialized Llama 3.1 model for scientific literature analysis",
-        "Reduce literature review and data synthesis time by 40% compared to manual methods",
-        "Prepare a research paper for submission based on agent-generated hypotheses and analysis"
-      ]
-    },
-    {
-      project: "Financial Trading", 
-      metrics: [
-        "Process real-time market data with sub-50ms latency for model inference",
-        "Achieve target risk-adjusted return during backtesting on historical market data",
-        "Develop a novel risk management framework suitable for multi-agent systems"
-      ]
-    },
-    {
-      project: "Code Migration",
-      metrics: [
-        "Attain 95% functional validation on unit and integration tests for migrated codebase",
-        "Eliminate over 60% of manual engineering hours required for legacy system updates",
-        "Publish the distributed agent framework as an open-source tool for developers"
-      ]
-    }
-  ];
+  useEffect(() => {
+    const fetchServiceData = async () => {
+      try {
+        const response = await fetch('/api/services/agentic-ai');
+        if (!response.ok) {
+          throw new Error('Failed to fetch service data');
+        }
+        const data = await response.json();
+        setServiceData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceData();
+  }, []);
+
+  const handleApplyClick = (gig: ProjectProposal) => {
+    // Navigate to the new apply page
+    window.location.href = `/proposals/apply/${gig.id}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading AI service data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Error loading service data: {error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const projectProposals = serviceData?.project_proposals || [];
 
   const features = [
     "Autonomous Decision Making",
@@ -188,110 +180,134 @@ const AgenticAIServicePage = () => {
         </div>
       </div>
 
-      {/* Top Projects Section */}
+      {/* Project Proposals Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Top 3 Most Complex <span className="text-blue-600">Agentic AI Projects</span>
+              Available <span className="text-purple-600">AI Projects</span>
             </h2>
             <p className="text-xl text-gray-600">
-              Cutting-edge projects that push the boundaries of autonomous AI systems
+              Join cutting-edge AI projects and work with industry experts
             </p>
           </div>
           
+          {projectProposals.length === 0 ? (
+            <div className="text-center py-12">
+              <Brain className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Projects Available</h3>
+              <p className="text-gray-500">Check back later for new AI project opportunities.</p>
+            </div>
+          ) : (
           <div className="space-y-12">
-            {topProjects.map((project, index) => (
-              <div key={index} className={`bg-gradient-to-r from-${project.color}-50 to-${project.color}-100 rounded-2xl p-8 shadow-lg`}>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
-                    <div className="flex items-center mb-4">
-                      {project.icon}
-                      <h3 className="text-2xl font-bold text-gray-900 ml-4">{project.title}</h3>
+            {projectProposals.map((project, index) => {
+              const icon = <Brain className="w-8 h-8 text-purple-600" />;
+              const features = project.skills_required.split(',').map(skill => skill.trim());
+              
+              return (
+                <div key={project.id || index} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2">
+                      <div className="flex items-center mb-4">
+                        {icon}
+                        <h3 className="text-2xl font-bold text-gray-900 ml-4">{project.title}</h3>
+                      </div>
+                      <div className="flex flex-wrap gap-4 mb-6">
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Type: {project.type}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Duration: {project.duration}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Budget: {project.budget}</span>
+                        </div>
+                        <div className="bg-white px-3 py-1 rounded-full">
+                          <span className="text-sm font-medium text-gray-700">Max Applications: {project.max_applications}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-700 mb-6">{project.description}</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-3">Skills Required:</h4>
+                          <ul className="space-y-2">
+                            {features.map((feature, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <CheckCircle className="w-4 h-4 text-purple-500 mr-2 mt-1 flex-shrink-0" />
+                                <span className="text-sm text-gray-700">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-3">Eligibility Criteria:</h4>
+                          <div className="space-y-2">
+                            {project.eligibility_criteria?.prerequisites && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Prerequisites:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.prerequisites.join(', ')}</p>
+                              </div>
+                            )}
+                            {project.eligibility_criteria?.experience_level && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Experience Level:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.experience_level}</p>
+                              </div>
+                            )}
+                            {project.eligibility_criteria?.complexity && (
+                              <div>
+                                <span className="text-sm font-medium text-gray-900">Complexity:</span>
+                                <p className="text-sm text-gray-600">{project.eligibility_criteria.complexity}/10</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-4 mb-6">
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Complexity: {project.complexity}</span>
-                      </div>
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Timeline: {project.timeline}</span>
-                      </div>
-                      <div className="bg-white px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">Budget: {project.budget}</span>
-                      </div>
-                    </div>
-                    <p className="text-gray-700 mb-6">{project.description}</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">Hardware Required:</h4>
-                        <p className="text-sm text-gray-600">{project.hardware}</p>
+                    <div className="space-y-6">
+                      <div className="bg-white p-4 rounded-lg">
+                        <h4 className="font-semibold text-gray-900 mb-2">Application Details:</h4>
+                        <p className="text-sm text-gray-600 mb-2">
+                          Deadline: {new Date(project.application_deadline).toLocaleDateString()}
+                        </p>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Created by: {project.created_by?.name || 'Lab Facilitator'}
+                        </p>
+                        
+                        {/* Apply Button */}
+                        <button
+                          onClick={() => handleApplyClick(project)}
+                          className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center font-semibold"
+                        >
+                          <ArrowRight className="w-4 h-4 mr-2" />
+                          Apply for this Gig
+                        </button>
+                        
+                        {/* Additional Info */}
+                        <div className="mt-3 text-xs text-gray-500 text-center">
+                          <div className="flex items-center justify-center mb-1">
+                            <Clock className="w-3 h-3 mr-1" />
+                            <span>Deadline: {new Date(project.application_deadline).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center justify-center">
+                            <Users className="w-3 h-3 mr-1" />
+                            <span>Max: {project.max_applications} applications</span>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">Software Stack:</h4>
-                        <p className="text-sm text-gray-600">{project.software}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Learning Outcomes:</h4>
-                      <ul className="space-y-2">
-                        {project.learningOutcomes.map((outcome, idx) => (
-                          <li key={idx} className="flex items-start">
-                            <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-1 flex-shrink-0" />
-                            <span className="text-sm text-gray-700">{outcome}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Industry Applications:</h4>
-                      <ul className="space-y-1">
-                        {project.applications.map((app, idx) => (
-                          <li key={idx} className="text-sm text-gray-600">• {app}</li>
-                        ))}
-                      </ul>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+          )}
         </div>
       </section>
 
-      {/* Success Metrics Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Success <span className="text-blue-600">Metrics</span>
-            </h2>
-            <p className="text-xl text-gray-600">
-              Measurable outcomes that define project success
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {successMetrics.map((metric, index) => (
-              <div key={index} className="bg-white rounded-lg p-6 shadow-md">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{metric.project}</h3>
-                <ul className="space-y-3">
-                  {metric.metrics.map((item, idx) => (
-                    <li key={idx} className="flex items-start">
-                      <Target className="w-5 h-5 text-blue-500 mr-3 mt-1 flex-shrink-0" />
-                      <span className="text-gray-700">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Features Section */}
       <section className="py-20 bg-white">
