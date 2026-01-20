@@ -18,6 +18,15 @@ import {
   Paperclip
 } from 'lucide-react';
 
+interface EligibilityCriteriaItem {
+  id: string;
+  name: string;
+  type: string;
+  value: string;
+  data_type: string;
+  description?: string;
+}
+
 interface EligibilityCriteria {
   experience_level?: string;
   prerequisites?: string[];
@@ -35,7 +44,7 @@ interface Gig {
   title: string;
   description: string;
   skills_required: string;
-  eligibility_criteria: string | EligibilityCriteria;
+  eligibility_criteria: string | EligibilityCriteria | EligibilityCriteriaItem[];
   status: string;
   application_deadline: string;
   max_applications: number;
@@ -90,10 +99,11 @@ const GigDetailsPage: React.FC = () => {
   const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null);
 
   // Helper function to parse eligibility criteria
-  const parseEligibilityCriteria = (criteria: string | EligibilityCriteria): EligibilityCriteria | null => {
+  const parseEligibilityCriteria = (criteria: string | EligibilityCriteria | EligibilityCriteriaItem[]): EligibilityCriteria | EligibilityCriteriaItem[] | null => {
     if (typeof criteria === 'string') {
       try {
-        return JSON.parse(criteria);
+        const parsed = JSON.parse(criteria);
+        return parsed;
       } catch (error) {
         console.error('Error parsing eligibility criteria:', error);
         return null;
@@ -102,45 +112,105 @@ const GigDetailsPage: React.FC = () => {
     return criteria;
   };
 
+  // Helper function to check if criteria is an array format
+  const isArrayFormat = (criteria: any): criteria is EligibilityCriteriaItem[] => {
+    return Array.isArray(criteria) && criteria.length > 0 && 'name' in criteria[0] && 'value' in criteria[0];
+  };
+
   // Helper function to format eligibility criteria for display
-  const formatEligibilityCriteria = (criteria: string | EligibilityCriteria) => {
+  // Helper function to check if criteria should be hidden
+  const shouldHideCriteria = (name: string, description?: string): boolean => {
+    const nameLower = name.toLowerCase();
+    const descLower = (description || '').toLowerCase();
+    const combined = `${nameLower} ${descLower}`;
+    
+    // Patterns to hide
+    const hidePatterns = [
+      'rate and describe',
+      'please describe',
+      'describe what you worked',
+      'describe what you learnt',
+      'describe what have you worked'
+    ];
+    
+    return hidePatterns.some(pattern => combined.includes(pattern));
+  };
+
+  const formatEligibilityCriteria = (criteria: string | EligibilityCriteria | EligibilityCriteriaItem[]) => {
     const parsed = parseEligibilityCriteria(criteria);
     if (!parsed) return null;
 
+    // Handle array format (new format)
+    if (isArrayFormat(parsed)) {
+      // Filter out criteria that should be hidden
+      const visibleCriteria = parsed.filter(item => 
+        !shouldHideCriteria(item.name, item.description)
+      );
+      
+      if (visibleCriteria.length === 0) {
+        return <p className="text-sm text-gray-500">No eligibility criteria specified</p>;
+      }
+      
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {visibleCriteria.map((item, index) => (
+              <div key={item.id || index} className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-gray-900 mb-2">{item.name}</h4>
+                {item.value && (
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full mb-2 inline-block">
+                    {item.value}
+                  </span>
+                )}
+                {item.description && (
+                  <p className="text-sm text-gray-600 mt-2">{item.description}</p>
+                )}
+                {item.data_type && (
+                  <p className="text-xs text-gray-500 mt-1">Type: {item.data_type}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Handle object format (old format)
+    const objCriteria = parsed as EligibilityCriteria;
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {parsed.experience_level && (
+          {objCriteria.experience_level && (
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="font-semibold text-gray-900 mb-2">Experience Level</h4>
-              <p className="text-gray-700">{parsed.experience_level}</p>
+              <p className="text-gray-700">{objCriteria.experience_level}</p>
             </div>
           )}
-          {parsed.duration && (
+          {objCriteria.duration && (
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="font-semibold text-gray-900 mb-2">Duration</h4>
-              <p className="text-gray-700">{parsed.duration}</p>
+              <p className="text-gray-700">{objCriteria.duration}</p>
             </div>
           )}
-          {parsed.budget && (
+          {objCriteria.budget && (
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="font-semibold text-gray-900 mb-2">Budget</h4>
-              <p className="text-gray-700">{parsed.budget}</p>
+              <p className="text-gray-700">{objCriteria.budget}</p>
             </div>
           )}
-          {parsed.complexity && (
+          {objCriteria.complexity && (
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="font-semibold text-gray-900 mb-2">Complexity</h4>
-              <p className="text-gray-700">{parsed.complexity}</p>
+              <p className="text-gray-700">{objCriteria.complexity}</p>
             </div>
           )}
         </div>
         
-        {parsed.prerequisites && parsed.prerequisites.length > 0 && (
+        {objCriteria.prerequisites && objCriteria.prerequisites.length > 0 && (
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-3">Prerequisites</h4>
             <div className="flex flex-wrap gap-2">
-              {parsed.prerequisites.map((prereq, index) => (
+              {objCriteria.prerequisites.map((prereq, index) => (
                 <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
                   {prereq}
                 </span>
@@ -149,11 +219,11 @@ const GigDetailsPage: React.FC = () => {
           </div>
         )}
         
-        {parsed.features && parsed.features.length > 0 && (
+        {objCriteria.features && objCriteria.features.length > 0 && (
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-3">Features</h4>
             <div className="space-y-2">
-              {parsed.features.map((feature, index) => (
+              {objCriteria.features.map((feature, index) => (
                 <div key={index} className="flex items-start">
                   <CheckCircle className="h-4 w-4 text-green-600 mt-1 mr-2 flex-shrink-0" />
                   <span className="text-gray-700">{feature}</span>
@@ -163,11 +233,11 @@ const GigDetailsPage: React.FC = () => {
           </div>
         )}
         
-        {parsed.tech_stack && parsed.tech_stack.length > 0 && (
+        {objCriteria.tech_stack && objCriteria.tech_stack.length > 0 && (
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-3">Tech Stack</h4>
             <div className="space-y-2">
-              {parsed.tech_stack.map((tech, index) => (
+              {objCriteria.tech_stack.map((tech, index) => (
                 <div key={index} className="flex items-start">
                   <Star className="h-4 w-4 text-yellow-600 mt-1 mr-2 flex-shrink-0" />
                   <span className="text-gray-700">{tech}</span>
@@ -177,17 +247,17 @@ const GigDetailsPage: React.FC = () => {
           </div>
         )}
         
-        {parsed.hardware && (
+        {objCriteria.hardware && (
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-2">Hardware Requirements</h4>
-            <p className="text-gray-700">{parsed.hardware}</p>
+            <p className="text-gray-700">{objCriteria.hardware}</p>
           </div>
         )}
         
-        {parsed.software && (
+        {objCriteria.software && (
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold text-gray-900 mb-2">Software Requirements</h4>
-            <p className="text-gray-700">{parsed.software}</p>
+            <p className="text-gray-700">{objCriteria.software}</p>
           </div>
         )}
       </div>
@@ -490,7 +560,7 @@ const GigDetailsPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Problem Statement</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">Features</h4>
                   <p className="text-gray-700">{selectedProposal.problem_statement}</p>
                 </div>
 

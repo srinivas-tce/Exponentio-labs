@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 
 export default function LoginForm() {
@@ -9,20 +9,30 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, isLoading, error, clearError, user } = useAuthStore();
 
   // Redirect after successful login
   useEffect(() => {
     if (user && !isLoading) {
-      if (user.role === 'facilitator' || user.role === 'facility-manager') {
-        router.push('/facilitator-dashboard');
-      } else if (user.role === 'student') {
-        router.push('/');
+      // Check if there's a redirect parameter
+      const redirectUrl = searchParams.get('redirect');
+      
+      if (redirectUrl) {
+        // Redirect to the specified URL
+        router.push(redirectUrl);
       } else {
-        router.push('/');
+        // Default redirect based on role
+        if (user.role === 'facilitator' || user.role === 'facility-manager') {
+          router.push('/facilitator-dashboard');
+        } else if (user.role === 'student') {
+          router.push('/');
+        } else {
+          router.push('/');
+        }
       }
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

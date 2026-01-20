@@ -519,9 +519,18 @@ const gigCategories = [
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Find the <span className='text-orange-600 font-bold'>Team</span> That Gets <span className='text-blue-600 font-bold'>Your Project</span> Shipped 🚀
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 mb-6">
              Domains We Power with Industry-Updated Technologies
             </p>
+            <div className="flex justify-center">
+              <Link
+                href="/inquiry"
+                className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md"
+              >
+                Partner with Our Labs
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Link>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -659,6 +668,25 @@ const gigCategories = [
         </p>
       </div>
     </div>
+
+    {/* CTA for Companies */}
+    <div className="mt-16 text-center">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-12 shadow-xl">
+        <h3 className="text-3xl font-bold text-white mb-4">
+          Partner with Our Labs
+        </h3>
+        <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+          Are you a company looking to collaborate? Submit an inquiry and our facility managers will get back to you within 24-48 hours.
+        </p>
+        <Link
+          href="/inquiry"
+          className="inline-flex items-center bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-lg shadow-lg"
+        >
+          Submit Your Inquiry
+          <ArrowRight className="w-5 h-5 ml-2" />
+        </Link>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -729,8 +757,15 @@ const gigCategories = [
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
+              href="/inquiry"
+              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center justify-center"
+            >
+              Partner with Our Labs
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Link>
+            <Link
               href="/login"
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
             >
               Get Started Free
             </Link>

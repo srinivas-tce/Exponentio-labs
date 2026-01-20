@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -16,7 +19,7 @@ export async function GET(request: NextRequest) {
     console.log('Fetching proposals for student:', studentId);
 
     // First, let's check if there are any proposals for this student
-    const { data: proposals, error } = await supabaseService
+    const { data: proposals, error } = await supabase
       .from('proposals')
       .select('*')
       .eq('student_id', studentId)

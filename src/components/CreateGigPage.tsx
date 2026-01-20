@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import { Plus, Trash2, Eye, Save, ArrowLeft, Calendar, Users, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
@@ -21,11 +22,16 @@ interface GigFormData {
   application_deadline: string;
   max_applications: number;
   lab_id: string;
+  budget: string;
 }
 
 const CreateGigPage = () => {
+  const params = useParams();
+  const gigId = params?.id as string | undefined;
+  const isEditMode = !!gigId;
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(isEditMode);
   const [previewMode, setPreviewMode] = useState(false);
   const [labs, setLabs] = useState<any[]>([]);
   const [formData, setFormData] = useState<GigFormData>({
@@ -35,7 +41,8 @@ const CreateGigPage = () => {
     eligibility_criteria: [],
     application_deadline: '',
     max_applications: 10,
-    lab_id: ''
+    lab_id: '',
+    budget: ''
   });
 
   // Fetch labs on component mount
@@ -54,6 +61,82 @@ const CreateGigPage = () => {
 
     fetchLabs();
   }, []);
+
+  // Fetch gig data if in edit mode
+  useEffect(() => {
+    if (isEditMode && gigId) {
+      const fetchGig = async () => {
+        try {
+          setFetching(true);
+          const response = await fetch(`/api/facilitator/gigs/${gigId}`);
+          const data = await response.json();
+          
+          if (data.success && data.data) {
+            const gig = data.data;
+            
+            // Parse eligibility criteria
+            let eligibilityCriteria: EligibilityCriteria[] = [];
+            let budget = '';
+            if (gig.eligibility_criteria) {
+              if (typeof gig.eligibility_criteria === 'string') {
+                try {
+                  const parsed = JSON.parse(gig.eligibility_criteria);
+                  if (Array.isArray(parsed)) {
+                    eligibilityCriteria = parsed;
+                  } else if (typeof parsed === 'object' && parsed !== null) {
+                    // Handle object format with budget field
+                    if (parsed.budget) {
+                      budget = parsed.budget;
+                    }
+                    // Check if there are criteria in the object
+                    if (parsed.criteria && Array.isArray(parsed.criteria)) {
+                      eligibilityCriteria = parsed.criteria;
+                    }
+                  }
+                } catch (e) {
+                  console.error('Error parsing eligibility criteria:', e);
+                }
+              } else if (Array.isArray(gig.eligibility_criteria)) {
+                eligibilityCriteria = gig.eligibility_criteria;
+              } else if (typeof gig.eligibility_criteria === 'object' && gig.eligibility_criteria !== null) {
+                // Handle object format
+                if (gig.eligibility_criteria.budget) {
+                  budget = gig.eligibility_criteria.budget;
+                }
+                if (gig.eligibility_criteria.criteria && Array.isArray(gig.eligibility_criteria.criteria)) {
+                  eligibilityCriteria = gig.eligibility_criteria.criteria;
+                }
+              }
+            }
+            
+            // Format application deadline for datetime-local input
+            let formattedDeadline = '';
+            if (gig.application_deadline) {
+              const date = new Date(gig.application_deadline);
+              formattedDeadline = date.toISOString().slice(0, 16);
+            }
+            
+            setFormData({
+              title: gig.title || '',
+              description: gig.description || '',
+              skills_required: gig.skills_required || '',
+              eligibility_criteria: eligibilityCriteria,
+              application_deadline: formattedDeadline,
+              max_applications: gig.max_applications || 10,
+              lab_id: gig.lab_id || '',
+              budget: budget
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching gig:', error);
+        } finally {
+          setFetching(false);
+        }
+      };
+      
+      fetchGig();
+    }
+  }, [isEditMode, gigId]);
 
   const dataTypeOptions = [
     { value: 'text', label: 'Text', icon: '' },
@@ -146,25 +229,76 @@ const CreateGigPage = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('/api/facilitator/gigs', {
-        method: 'POST',
+      const url = isEditMode 
+        ? `/api/facilitator/gigs/${gigId}`
+        : '/api/facilitator/gigs';
+      
+      const method = isEditMode ? 'PUT' : 'POST';
+      
+      // Format application deadline for API
+      const formattedDeadline = formData.application_deadline 
+        ? new Date(formData.application_deadline).toISOString()
+        : null;
+
+      // Prepare eligibility criteria with budget
+      // Budget is stored as a property in eligibility_criteria object
+      // If there are criteria, they should be in an array
+      let eligibilityCriteriaWithBudget: any;
+      if (formData.budget || formData.eligibility_criteria.length > 0) {
+        if (formData.eligibility_criteria.length > 0) {
+          // If there are criteria, store as object with budget and criteria array
+          eligibilityCriteriaWithBudget = {
+            ...(formData.budget ? { budget: formData.budget } : {}),
+            criteria: formData.eligibility_criteria
+          };
+        } else if (formData.budget) {
+          // If only budget exists, store as object with just budget
+          eligibilityCriteriaWithBudget = { budget: formData.budget };
+        } else {
+          // Empty array if nothing
+          eligibilityCriteriaWithBudget = [];
+        }
+      } else {
+        eligibilityCriteriaWithBudget = [];
+      }
+
+      const body = isEditMode
+        ? {
+            title: formData.title,
+            description: formData.description,
+            skills_required: formData.skills_required,
+            eligibility_criteria: eligibilityCriteriaWithBudget,
+            application_deadline: formattedDeadline,
+            max_applications: formData.max_applications,
+            lab_id: formData.lab_id,
+            facilitator_id: user.id
+          }
+        : {
+            ...formData,
+            eligibility_criteria: eligibilityCriteriaWithBudget,
+            application_deadline: formattedDeadline,
+            created_by: user.id
+          };
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          created_by: user.id
-        })
+        body: JSON.stringify(body)
       });
 
       if (response.ok) {
         // Redirect to gigs list or show success message
         window.location.href = '/facilitator-dashboard/gigs';
       } else {
-        console.error('Failed to create gig');
+        const errorData = await response.json();
+        console.error('Failed to save gig:', errorData);
+        alert(errorData.error || 'Failed to save gig');
       }
     } catch (error) {
-      console.error('Error creating gig:', error);
+      console.error('Error saving gig:', error);
+      alert('An error occurred while saving the gig');
     } finally {
       setLoading(false);
     }
@@ -176,6 +310,17 @@ const CreateGigPage = () => {
            formData.lab_id && 
            formData.eligibility_criteria.every(c => c.name && c.value);
   };
+
+  if (fetching) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading gig details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -203,8 +348,14 @@ const CreateGigPage = () => {
               </button>
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mt-4">Create New Gig</h1>
-          <p className="text-gray-600 mt-2">Create a new gig with dynamic eligibility criteria for students.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mt-4">
+            {isEditMode ? 'Edit Gig' : 'Create New Gig'}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {isEditMode 
+              ? 'Update the gig details and eligibility criteria.'
+              : 'Create a new gig with dynamic eligibility criteria for students.'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -305,6 +456,20 @@ const CreateGigPage = () => {
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="React, Node.js, Python..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Budget
+                  </label>
+                  <input
+                    type="text"
+                    name="budget"
+                    value={formData.budget}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., ₹50,000 - ₹1,00,000 or $2,000 - $5,000"
                   />
                 </div>
               </div>
@@ -475,12 +640,12 @@ const CreateGigPage = () => {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating...
+                  {isEditMode ? 'Saving...' : 'Creating...'}
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  Create Gig
+                  {isEditMode ? 'Save Changes' : 'Create Gig'}
                 </>
               )}
             </button>

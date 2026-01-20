@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // GET /api/labs - Get all labs from Supabase
 export async function GET(request: NextRequest) {
   try {
-    // Get all labs
-    const { data: labs, error } = await supabase
+    const url = new URL(request.url);
+    const category = url.searchParams.get('category');
+
+    // Build query
+    let query = supabase
       .from('labs')
       .select(`
         id,
@@ -16,8 +22,14 @@ export async function GET(request: NextRequest) {
         capacity,
         thumbnail_url,
         created_at
-      `)
-      .order('name', { ascending: true });
+      `);
+
+    // Filter by category if provided
+    if (category) {
+      query = query.eq('category', category);
+    }
+
+    const { data: labs, error } = await query.order('name', { ascending: true });
 
     if (error) {
       console.error('Labs fetch error:', error);

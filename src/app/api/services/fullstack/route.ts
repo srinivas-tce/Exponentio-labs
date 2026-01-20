@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../../lib/supabase';
 
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+
 // GET /api/services/fullstack - Get Full Stack service data (gigs/projects) from Supabase
 export async function GET(request: NextRequest) {
   try {
@@ -36,16 +39,43 @@ export async function GET(request: NextRequest) {
 
     // Transform gigs to match the service page format
     const projectProposals = gigs.map(gig => {
-      const criteria = typeof gig.eligibility_criteria === 'string' 
-        ? JSON.parse(gig.eligibility_criteria) 
-        : gig.eligibility_criteria;
+      let criteria: any = null;
+      let budget = 'Contact for pricing';
+      
+      // Parse eligibility_criteria
+      if (gig.eligibility_criteria) {
+        if (typeof gig.eligibility_criteria === 'string') {
+          try {
+            criteria = JSON.parse(gig.eligibility_criteria);
+          } catch (e) {
+            console.error('Error parsing eligibility_criteria:', e);
+            criteria = null;
+          }
+        } else {
+          criteria = gig.eligibility_criteria;
+        }
+        
+        // Extract budget from criteria object
+        if (criteria && typeof criteria === 'object') {
+          if (criteria.budget) {
+            budget = criteria.budget;
+          }
+          // If criteria has a 'criteria' array, use that for eligibility display
+          // Otherwise use the whole object
+          if (Array.isArray(criteria.criteria)) {
+            // Keep the structure with budget and criteria array
+          } else if (Array.isArray(criteria)) {
+            // If it's already an array, use it directly
+          }
+        }
+      }
 
       return {
         id: gig.id,
         title: gig.title,
         type: criteria?.experience_level || 'Project',
         duration: criteria?.duration || '4-6 weeks',
-        budget: criteria?.budget || 'Contact for pricing',
+        budget: budget,
         description: gig.description,
         skills_required: gig.skills_required,
         eligibility_criteria: criteria,
@@ -66,7 +96,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       service: {
         name: 'Full Stack Development',
         description: 'End-to-end web and application development solutions. From frontend to backend, we build scalable, modern applications that grow with your business.',
@@ -77,6 +107,14 @@ export async function GET(request: NextRequest) {
       project_proposals: projectProposals,
       total_proposals: projectProposals.length
     });
+
+    // Disable all caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+
+    return response;
 
   } catch (error) {
     console.error('Error fetching Full Stack service data:', error);

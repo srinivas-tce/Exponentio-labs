@@ -198,7 +198,7 @@ const ProposalSubmissionForm: React.FC<ProposalSubmissionFormProps> = ({
             {/* Problem Statement */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Problem Statement *
+                Features you want to contribute *
               </label>
               <textarea
                 name="problem_statement"

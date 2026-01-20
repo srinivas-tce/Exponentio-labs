@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Bot, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, Cpu, MapPin, Package, Target, Award, Clock, BarChart, Settings, Eye, Navigation, Loader2 } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
 
 interface ProjectProposal {
   id: string;
@@ -42,6 +44,8 @@ interface ServiceData {
 }
 
 const RoboticsServicePage = () => {
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,8 +70,33 @@ const RoboticsServicePage = () => {
   }, []);
 
   const handleApplyClick = (gig: ProjectProposal) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to login page with return URL
+      router.push(`/login?redirect=/proposals/apply/${gig.id}`);
+      return;
+    }
     // Navigate to the new apply page
-    window.location.href = `/proposals/apply/${gig.id}`;
+    router.push(`/proposals/apply/${gig.id}`);
+  };
+
+  // Helper function to format budget with INR prefix
+  const formatBudget = (budget: string | null | undefined): string => {
+    if (!budget) return 'Contact for pricing';
+    const budgetLower = budget.toLowerCase();
+    // If already contains INR or contact/pricing keywords, return as is
+    if (budgetLower.includes('inr') || budgetLower.includes('contact') || budgetLower.includes('pricing') || budgetLower.includes('free')) {
+      return budget;
+    }
+    // Add INR prefix
+    return `INR ${budget}`;
+  };
+
+  // Helper function to check if deadline has passed
+  const isDeadlinePassed = (deadline: string): boolean => {
+    const deadlineDate = new Date(deadline);
+    const now = new Date();
+    return deadlineDate < now;
   };
 
   if (loading) {
@@ -219,7 +248,7 @@ const RoboticsServicePage = () => {
                           <span className="text-sm font-medium text-gray-700">Duration: {project.duration}</span>
                         </div>
                         <div className="bg-white px-3 py-1 rounded-full">
-                          <span className="text-sm font-medium text-gray-700">Budget: {project.budget}</span>
+                          <span className="text-sm font-medium text-gray-700">Budget: {formatBudget(project.budget)}</span>
                         </div>
                         <div className="bg-white px-3 py-1 rounded-full">
                           <span className="text-sm font-medium text-gray-700">Max Applications: {project.max_applications}</span>
@@ -227,7 +256,7 @@ const RoboticsServicePage = () => {
                       </div>
                       <p className="text-gray-700 mb-6">{project.description}</p>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
                         <div>
                           <h4 className="font-semibold text-gray-900 mb-3">Skills Required:</h4>
                           <ul className="space-y-2">
@@ -238,30 +267,6 @@ const RoboticsServicePage = () => {
                               </li>
                             ))}
                           </ul>
-                        </div>
-                        
-                        <div>
-                          <h4 className="font-semibold text-gray-900 mb-3">Eligibility Criteria:</h4>
-                          <div className="space-y-2">
-                            {project.eligibility_criteria?.prerequisites && (
-                              <div>
-                                <span className="text-sm font-medium text-gray-900">Prerequisites:</span>
-                                <p className="text-sm text-gray-600">{project.eligibility_criteria.prerequisites.join(', ')}</p>
-                              </div>
-                            )}
-                            {project.eligibility_criteria?.experience_level && (
-                              <div>
-                                <span className="text-sm font-medium text-gray-900">Experience Level:</span>
-                                <p className="text-sm text-gray-600">{project.eligibility_criteria.experience_level}</p>
-                              </div>
-                            )}
-                            {project.eligibility_criteria?.complexity && (
-                              <div>
-                                <span className="text-sm font-medium text-gray-900">Complexity:</span>
-                                <p className="text-sm text-gray-600">{project.eligibility_criteria.complexity}/10</p>
-                              </div>
-                            )}
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -277,13 +282,22 @@ const RoboticsServicePage = () => {
                         </p>
                         
                         {/* Apply Button */}
-                        <button
-                          onClick={() => handleApplyClick(project)}
-                          className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center font-semibold"
-                        >
-                          <ArrowRight className="w-4 h-4 mr-2" />
-                          Apply for this Gig
-                        </button>
+                        {isDeadlinePassed(project.application_deadline) ? (
+                          <button
+                            disabled
+                            className="w-full bg-gray-400 text-white py-2 px-4 rounded-lg cursor-not-allowed flex items-center justify-center font-semibold"
+                          >
+                            Closed
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleApplyClick(project)}
+                            className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center font-semibold"
+                          >
+                            <ArrowRight className="w-4 h-4 mr-2" />
+                            Apply for this Gig
+                          </button>
+                        )}
                         
                         {/* Additional Info */}
                         <div className="mt-3 text-xs text-gray-500 text-center">

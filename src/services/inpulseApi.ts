@@ -53,7 +53,7 @@ class InpulseApiService {
   }
 
   async getUserDetails(token: string): Promise<InpulseUserDetails> {
-    const response = await fetch(`${this.baseUrl}/t/${this.tenantId}/users/details`, {
+    const response = await fetch(`${this.baseUrl}/users/details`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
