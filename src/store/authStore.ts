@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { inpulseApiService } from '@/services/inpulseApi';
+import { getSupabaseBrowserClient } from '@/lib/supabase-browser';
 
 export interface User {
   id: string;
@@ -27,6 +27,7 @@ export interface SubInterest {
 
 export interface AuthState {
   user: User | null;
+  /** Supabase access_token when using Supabase Auth; use for Bearer APIs if needed */
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -35,185 +36,221 @@ export interface AuthState {
 
 export interface AuthActions {
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  signup: (email: string, password: string, name: string) => Promise<void>;
+  logout: () => Promise<void>;
   setUser: (user: User) => void;
   setToken: (token: string) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
-  syncUserProfile: (userData: any, interests?: Interest[]) => Promise<void>;
-  fetchUserDetails: (token: string, email: string) => Promise<void>;
-  handleFacilitatorProfile: (token: string, email: string) => Promise<void>;
-  handleStudentProfile: (token: string, email: string) => Promise<void>;
+  /** Restore session from Supabase + load public.users profile */
+  hydrateFromSupabase: () => Promise<void>;
+}
+
+function mapApiUser(u: any): User {
+  return {
+    id: u.id,
+    email: u.email,
+    name: u.name,
+    role: u.role,
+    gender: u.gender,
+    thumbnail: u.thumbnail,
+    email_verified_at: u.email_verified_at,
+    interests: u.interests || [],
+  };
+}
+
+/**
+ * Syncs auth user into public.users. Returns the row as stored in DB — id may be
+ * existing PK from schema.sql (update-by-email), not necessarily auth.users.id.
+ */
+async function syncUserToPublicTable(params: {
+  id: string;
+  email: string;
+  name: string;
+}): Promise<User> {
+  const res = await fetch('/api/internal/users/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userData: {
+        id: params.id,
+        email: params.email,
+        name: params.name,
+        email_verified_at: new Date().toISOString(),
+      },
+    }),
+  });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(j.message || 'Failed to sync profile');
+  }
+  if (j.status !== 'success' || !j.data?.user) {
+    throw new Error(j.message || 'Failed to sync profile');
+  }
+  return mapApiUser(j.data.user);
+}
+
+async function maybeRedirectFacilitatorOnboarding(user: User) {
+  if (
+    (user.role !== 'facilitator' && user.role !== 'facility-manager') ||
+    typeof window === 'undefined'
+  ) {
+    return;
+  }
+  const checkRes = await fetch(
+    `/api/internal/users/facilitator?email=${encodeURIComponent(user.email)}`
+  );
+  if (!checkRes.ok) return;
+  const checkData = await checkRes.json();
+  if (checkData.status === 'success' && !checkData.data?.exists) {
+    sessionStorage.setItem('facilitatorEmail', user.email);
+    window.location.href = '/facilitator-registration';
+  }
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
   persist(
     (set, get) => ({
-      // Initial state
       user: null,
       token: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
 
-      // Actions
+      hydrateFromSupabase: async () => {
+        if (typeof window === 'undefined') return;
+        try {
+          const supabase = getSupabaseBrowserClient();
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+          if (!session?.user) {
+            set({
+              user: null,
+              token: null,
+              isAuthenticated: false,
+            });
+            return;
+          }
+          const email = session.user.email || '';
+          const name =
+            (session.user.user_metadata?.full_name as string) ||
+            email.split('@')[0] ||
+            'User';
+          // Sync updates existing row by email when present; returns canonical users.id
+          const user = await syncUserToPublicTable({
+            id: session.user.id,
+            email,
+            name,
+          });
+          set({
+            user,
+            token: session.access_token,
+            isAuthenticated: true,
+          });
+          await maybeRedirectFacilitatorOnboarding(user);
+        } catch {
+          // ignore hydrate errors
+        }
+      },
+
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
-        
         try {
-          const loginData = await inpulseApiService.signIn(email, password);
-          
-          if (loginData.status === 'success' && loginData.data?.token) {
-            set({ 
-              token: loginData.data.token, 
-              isAuthenticated: true, 
-              isLoading: false 
-            });
-            
-            // Fetch user details and interests
-            await get().fetchUserDetails(loginData.data.token, email);
-          } else {
-            throw new Error(loginData.message || 'No token received');
+          const supabase = getSupabaseBrowserClient();
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          if (error) throw new Error(error.message);
+
+          if (!data.session?.user) {
+            throw new Error('No session returned');
           }
+
+          const authUser = data.session.user;
+          const name =
+            (authUser.user_metadata?.full_name as string) ||
+            email.split('@')[0] ||
+            'User';
+
+          const user = await syncUserToPublicTable({
+            id: authUser.id,
+            email: authUser.email || email,
+            name,
+          });
+
+          set({
+            token: data.session.access_token,
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+
+          await maybeRedirectFacilitatorOnboarding(user);
         } catch (error) {
-          set({ 
+          set({
             error: error instanceof Error ? error.message : 'Login failed',
-            isLoading: false 
+            isLoading: false,
           });
         }
       },
 
-      fetchUserDetails: async (token: string, email: string) => {
+      signup: async (email: string, password: string, name: string) => {
+        set({ isLoading: true, error: null });
         try {
-          // Determine if user is facilitator/facility-manager or student based on email
-          const isFacilitatorOrManager = email.endsWith('@technicalcareer.education');
-          
-          if (isFacilitatorOrManager) {
-            // Handle facilitator/facility-manager profile check and creation
-            await get().handleFacilitatorProfile(token, email);
-          } else {
-            // Handle student profile sync
-            await get().handleStudentProfile(token, email);
+          const supabase = getSupabaseBrowserClient();
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { full_name: name },
+            },
+          });
+          if (error) throw new Error(error.message);
+
+          // Email confirmation may leave session null
+          if (!data.session?.user) {
+            set({
+              isLoading: false,
+              error: null,
+            });
+            throw new Error(
+              'Check your email to confirm your account, then sign in.'
+            );
           }
+
+          const authUser = data.session.user;
+          const user = await syncUserToPublicTable({
+            id: authUser.id,
+            email: authUser.email || email,
+            name,
+          });
+
+          set({
+            token: data.session.access_token,
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+          });
         } catch (error) {
-          set({ 
-            error: error instanceof Error ? error.message : 'Failed to fetch user details',
-            isLoading: false 
+          const message =
+            error instanceof Error ? error.message : 'Sign up failed';
+          set({
+            error: message,
+            isLoading: false,
           });
         }
       },
 
-      handleFacilitatorProfile: async (token: string, email: string) => {
+      logout: async () => {
         try {
-          console.log('Handling facilitator/facility-manager profile for:', email);
-          
-          // Skip Inpulse user details call for facilitators/facility-managers - they don't exist there
-          // Go directly to check/create facilitator profile in our database
-          
-          // Try to check if facilitator/facility-manager exists in our database
-          let exists = false;
-          let existingProfile = null;
-          
-          try {
-            const checkResult = await inpulseApiService.checkFacilitatorProfile(email);
-            exists = checkResult;
-            if (exists) {
-              // Fetch existing facilitator/facility-manager profile from our database
-              const response = await fetch(`/api/internal/users/facilitator?email=${encodeURIComponent(email)}`);
-              if (response.ok) {
-                const result = await response.json();
-                existingProfile = result.data.user;
-              }
-            }
-          } catch (checkError) {
-            // If check fails (e.g., "record not found"), assume facilitator/facility-manager doesn't exist
-            console.log('Facilitator/facility-manager check failed, will create new profile:', checkError);
-            exists = false;
-          }
-          
-          if (!exists || !existingProfile) {
-            // Redirect to facilitator registration form
-            console.log('Facilitator/facility-manager not found, redirecting to registration form');
-            set({ isLoading: false });
-            
-            // Store the email for the registration form
-            if (typeof window !== 'undefined') {
-              sessionStorage.setItem('facilitatorEmail', email);
-              window.location.href = '/facilitator-registration';
-            }
-          } else {
-            // Use existing facilitator/facility-manager profile
-            console.log('Using existing facilitator/facility-manager profile:', existingProfile);
-            
-            const user: User = {
-              id: existingProfile.id,
-              email: existingProfile.email,
-              name: existingProfile.name,
-              role: existingProfile.role,
-              gender: existingProfile.gender,
-              thumbnail: existingProfile.thumbnail,
-              email_verified_at: existingProfile.email_verified_at,
-            };
-
-            set({ user, isLoading: false });
-          }
-        } catch (error) {
-          console.error('Error handling facilitator/facility-manager profile:', error);
-          set({ 
-            error: error instanceof Error ? error.message : 'Failed to handle facilitator/facility-manager profile',
-            isLoading: false 
-          });
+          const supabase = getSupabaseBrowserClient();
+          await supabase.auth.signOut();
+        } catch {
+          // still clear local state
         }
-      },
-
-      handleStudentProfile: async (token: string, email: string) => {
-        try {
-          // Fetch user details and interests from Inpulse API
-          const userDetails = await inpulseApiService.getUserDetails(token);
-          const interests = await inpulseApiService.getUserInterests(token, userDetails.id);
-
-          // Sync user profile with our database
-          await get().syncUserProfile(userDetails, interests);
-          
-        } catch (error) {
-          set({ 
-            error: error instanceof Error ? error.message : 'Failed to handle student profile',
-            isLoading: false 
-          });
-        }
-      },
-
-      syncUserProfile: async (userData: any, interests?: Interest[]) => {
-        try {
-          // Sync user profile with our database
-          const syncedUser = await inpulseApiService.syncUserToDatabase(userData, interests || []);
-          
-          const user: User = {
-            id: syncedUser.user.id,
-            email: syncedUser.user.email,
-            name: syncedUser.user.name,
-            role: syncedUser.role,
-            gender: syncedUser.user.gender,
-            thumbnail: syncedUser.user.thumbnail,
-            email_verified_at: syncedUser.user.email_verified_at,
-            interests: syncedUser.interests || [],
-          };
-
-          set({ 
-            user, 
-            isLoading: false 
-          });
-          
-        } catch (error) {
-          set({ 
-            error: error instanceof Error ? error.message : 'Failed to sync user profile',
-            isLoading: false 
-          });
-        }
-      },
-
-      logout: () => {
         set({
           user: null,
           token: null,

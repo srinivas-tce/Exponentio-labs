@@ -10,7 +10,13 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, isLoading, error, clearError, user } = useAuthStore();
+  const { login, isLoading, error, clearError, user, hydrateFromSupabase } =
+    useAuthStore();
+
+  // Restore Supabase session on mount (e.g. refresh)
+  useEffect(() => {
+    void hydrateFromSupabase();
+  }, [hydrateFromSupabase]);
 
   // Redirect after successful login
   useEffect(() => {
@@ -171,7 +177,7 @@ export default function LoginForm() {
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Sign in with Inpulse
+                  Sign in
                 </>
               )}
             </button>
@@ -179,9 +185,9 @@ export default function LoginForm() {
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                Contact your administrator
+              Don&apos;t have an account?{' '}
+              <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Sign up
               </a>
             </p>
           </div>

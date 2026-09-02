@@ -1,6 +1,6 @@
-import ExternalInquiryForm from '@/components/ExternalInquiryForm';
+import InquiryPageShell from '@/components/inquiry/InquiryPageShell';
 
 export default function InquiryPage() {
-  return <ExternalInquiryForm />;
+  return <InquiryPageShell />;
 }
 

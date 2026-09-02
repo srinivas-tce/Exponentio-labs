@@ -1,0 +1,4 @@
+-- Legacy manual auth columns — NOT required when using Supabase Auth.
+-- Safe to add for old rows only if you still have password_hash/password_salt data.
+-- alter table users add column if not exists password_hash text;
+-- alter table users add column if not exists password_salt text;

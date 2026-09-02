@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseService } from '@/lib/supabase';
 
-// POST /api/internal/users/sync - Sync user profile from Inpulse
+// POST /api/internal/users/sync - Create/update user profile (manual sync; Inpulse disabled)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -25,12 +25,28 @@ export async function POST(request: NextRequest) {
       role = 'facilitator';
     }
 
-    // Check if user already exists
-    const existingUser = await supabaseService.getUserByEmail(userData.email);
-    
+    // Respect existing schema: users.id is PK; many tables reference users(id) ON DELETE CASCADE.
+    // Never delete/recreate a user row — that would cascade-delete proposals, gigs, etc.
+    // Flow:
+    // - Row exists by email → update that row in place (keep existing id).
+    // - Row exists by id only → update by id.
+    // - No row → create; for first-time Supabase Auth sign-up, userData.id may be auth.users.id.
+    const existingByEmail = await supabaseService.getUserByEmail(userData.email);
+    const existingById =
+      userData.id && (await supabaseService.getUserById(userData.id));
+
     let user;
-    if (existingUser) {
-      // Update existing user
+    let isNew = false;
+
+    if (existingByEmail) {
+      // Always update the existing profile row; primary key stays as in schema.sql
+      user = await supabaseService.updateUser(existingByEmail.id, {
+        name: userData.name,
+        gender: userData.gender,
+        thumbnail: userData.thumbnail,
+        email_verified_at: userData.email_verified_at,
+      });
+    } else if (existingById) {
       user = await supabaseService.updateUser(userData.id, {
         name: userData.name,
         gender: userData.gender,
@@ -38,26 +54,29 @@ export async function POST(request: NextRequest) {
         email_verified_at: userData.email_verified_at,
       });
     } else {
-      // Create new user
+      // New user: use provided id (e.g. auth.users.id) or DB default uuid_generate_v4() via createUser
       user = await supabaseService.createUser({
         id: userData.id,
         email: userData.email,
         name: userData.name,
-        role: role,
+        role,
         gender: userData.gender,
         thumbnail: userData.thumbnail,
         email_verified_at: userData.email_verified_at,
       });
+      isNew = true;
     }
+
+    const { password_hash, password_salt, ...safeUser } = user || {};
 
     return NextResponse.json({
       status: 'success',
       message: 'User profile synced successfully',
       data: {
-        user: user,
-        isNew: !existingUser,
-        role: role
-      }
+        user: safeUser,
+        isNew,
+        role,
+      },
     });
 
   } catch (error) {
@@ -109,10 +128,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const { password_hash, password_salt, ...safeUser } = user;
+
     return NextResponse.json({
       status: 'success',
       message: 'User found',
-      data: { user }
+      data: { user: safeUser }
     });
 
   } catch (error) {
@@ -145,13 +166,17 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Update user profile
-    const updatedUser = await supabaseService.updateUser(userId, updates);
+    const safeUpdates = { ...updates };
+    delete safeUpdates.password_hash;
+    delete safeUpdates.password_salt;
+
+    const updatedUser = await supabaseService.updateUser(userId, safeUpdates);
+    const { password_hash, password_salt, ...safeUser } = updatedUser || {};
 
     return NextResponse.json({
       status: 'success',
       message: 'User profile updated successfully',
-      data: { user: updatedUser }
+      data: { user: safeUser }
     });
 
   } catch (error) {

@@ -43,6 +43,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // preferred_lab_category is DB enum lab_category — only 'software' | 'hardware'.
+    // LLM/draft may send free text; treat as optional and never fail insert.
+    const allowedLabCategory = ['software', 'hardware'] as const;
+    const labCategoryNormalized =
+      typeof preferred_lab_category === 'string' &&
+      allowedLabCategory.includes(
+        preferred_lab_category.trim().toLowerCase() as (typeof allowedLabCategory)[number]
+      )
+        ? (preferred_lab_category.trim().toLowerCase() as 'software' | 'hardware')
+        : null;
+    let additionalNotes = additional_notes || null;
+    if (
+      preferred_lab_category &&
+      typeof preferred_lab_category === 'string' &&
+      preferred_lab_category.trim() &&
+      !labCategoryNormalized
+    ) {
+      const tag = `[Preferred lab category (free text): ${preferred_lab_category.trim()}]`;
+      additionalNotes = additionalNotes
+        ? `${additionalNotes}\n\n${tag}`
+        : tag;
+    }
+
     // Create the inquiry
     const { data: inquiry, error } = await supabase
       .from('external_inquiries')
@@ -58,11 +81,11 @@ export async function POST(request: NextRequest) {
         project_requirements: project_requirements || null,
         budget_range: budget_range || null,
         timeline: timeline || null,
-        preferred_lab_category: preferred_lab_category || null,
+        preferred_lab_category: labCategoryNormalized,
         preferred_lab_id: preferred_lab_id || null,
         equipment_needed: equipment_needed || false,
         equipment_details: equipment_details || null,
-        additional_notes: additional_notes || null,
+        additional_notes: additionalNotes,
         status: 'pending',
       })
       .select()

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { MarkdownDisplay } from '@/components/MarkdownDisplay';
 import { useAuthStore } from '@/store/authStore';
 import { 
   ArrowLeft, 
@@ -302,13 +303,13 @@ const InquiryDetailPage: React.FC = () => {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Project Description</p>
-                    <p className="text-gray-900 whitespace-pre-wrap">{inquiry.project_description}</p>
+                    <p className="text-sm text-gray-500 mb-2">Project Description</p>
+                    <MarkdownDisplay content={inquiry.project_description} />
                   </div>
                   {inquiry.project_requirements && (
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">Requirements</p>
-                      <p className="text-gray-900 whitespace-pre-wrap">{inquiry.project_requirements}</p>
+                    <div className="pt-4 border-t border-gray-100">
+                      <p className="text-sm text-gray-500 mb-2">Requirements (PRD)</p>
+                      <MarkdownDisplay content={inquiry.project_requirements} />
                     </div>
                   )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t">

@@ -1,3 +1,16 @@
+/**
+ * Inpulse API integration — DISABLED / COMMENTED OUT
+ * ---------------------------------------------------------------------------
+ * Auth and profile now use the manual flow:
+ * - POST /api/internal/auth/signin
+ * - POST /api/internal/auth/signup
+ * - GET/PUT /api/internal/users/sync (and /api/internal/users/profile)
+ *
+ * Re-enable by uncommenting the class below and wiring authStore.login back
+ * to inpulseApiService.signIn + getUserDetails/getUserInterests.
+ */
+
+/*
 // API service functions for Inpulse integration
 
 export interface InpulseUserDetails {
@@ -44,7 +57,7 @@ class InpulseApiService {
     }
 
     const data = await response.json();
-    
+
     if (data.status !== 'success') {
       throw new Error(data.message || 'Login failed');
     }
@@ -65,16 +78,15 @@ class InpulseApiService {
     }
 
     const data: InpulseApiResponse<InpulseUserDetails> = await response.json();
-    
-    // Check if the response indicates "record not found"
+
     if (data.status === 'error' && data.message && data.message.includes('record not found')) {
       throw new Error('record not found');
     }
-    
+
     if (data.status !== 'success') {
       throw new Error(data.message || 'Failed to fetch user details');
     }
-    
+
     return data.data;
   }
 
@@ -116,14 +128,14 @@ class InpulseApiService {
       }
 
       const result = await response.json();
-      
+
       if (result.status !== 'success') {
         throw new Error(result.message || 'Failed to sync user');
       }
 
       return {
         user: result.data.user,
-        interests: interests, // Keep interests from Inpulse API
+        interests: interests,
         isNew: result.data.isNew,
         role: result.data.role
       };
@@ -136,9 +148,8 @@ class InpulseApiService {
   async checkFacilitatorProfile(email: string): Promise<boolean> {
     try {
       const response = await fetch(`/api/internal/users/facilitator?email=${encodeURIComponent(email)}`);
-      
+
       if (!response.ok) {
-        // If we get a 404 or similar error, it means the facilitator doesn't exist
         if (response.status === 404) {
           return false;
         }
@@ -146,9 +157,8 @@ class InpulseApiService {
       }
 
       const result = await response.json();
-      
+
       if (result.status !== 'success') {
-        // If the API returns an error status, check if it's a "record not found" type error
         if (result.message && result.message.includes('record not found')) {
           return false;
         }
@@ -158,7 +168,6 @@ class InpulseApiService {
       return result.data.exists;
     } catch (error) {
       console.error('Error checking facilitator profile:', error);
-      // If there's any error, assume facilitator doesn't exist
       return false;
     }
   }
@@ -185,7 +194,7 @@ class InpulseApiService {
       }
 
       const result = await response.json();
-      
+
       if (result.status !== 'success') {
         throw new Error(result.message || 'Failed to create facilitator');
       }
@@ -199,3 +208,11 @@ class InpulseApiService {
 }
 
 export const inpulseApiService = new InpulseApiService();
+*/
+
+// Stub so any stray imports don't break; auth no longer uses this.
+export const inpulseApiService = {
+  signIn: async () => {
+    throw new Error('Inpulse auth is disabled. Use manual sign-in via /api/internal/auth/signin.');
+  },
+} as const;

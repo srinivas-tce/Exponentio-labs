@@ -63,7 +63,8 @@ const ProfilePage = () => {
       }
 
       try {
-        const response = await fetch(`/api/internal/users/sync?userId=${user.id}`);
+        // Custom profile API (no Inpulse) — same DB, dedicated route strips sensitive fields
+        const response = await fetch(`/api/internal/users/profile?userId=${user.id}`);
         if (response.ok) {
           const data = await response.json();
           const userData = data.data.user;
@@ -126,7 +127,7 @@ const ProfilePage = () => {
     
     setLoading(true);
     try {
-      const response = await fetch(`/api/internal/users/sync`, {
+      const response = await fetch(`/api/internal/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
