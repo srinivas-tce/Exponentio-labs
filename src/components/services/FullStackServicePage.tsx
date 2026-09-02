@@ -2,8 +2,30 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Code, CheckCircle, Users, Shield, Zap, DollarSign, TrendingUp, Lightbulb, ShoppingCart, BarChart, MessageCircle, Clock, Target, Award, Database, Smartphone, Globe, CreditCard, Loader2, Send, Calendar, User } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
 import ProposalSubmissionForm from '@/components/ProposalSubmissionForm';
+
+interface EligibilityCriteriaItem {
+  id: string;
+  name: string;
+  type: string;
+  value: string;
+  data_type: string;
+  description?: string;
+}
+
+interface EligibilityCriteria {
+  experience_level?: string;
+  prerequisites?: string[];
+  duration?: string;
+  budget?: string;
+  features?: string[];
+  complexity?: string;
+  hardware?: string;
+  software?: string;
+}
 
 interface ProjectProposal {
   id: string;
@@ -13,7 +35,7 @@ interface ProjectProposal {
   budget: string;
   description: string;
   skills_required: string;
-  eligibility_criteria: any;
+  eligibility_criteria: EligibilityCriteria | EligibilityCriteriaItem[] | string | null;
   application_deadline: string;
   max_applications: number;
   lab: {
@@ -43,6 +65,8 @@ interface ServiceData {
 }
 
 const FullStackServicePage = () => {
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
   const [serviceData, setServiceData] = useState<ServiceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,8 +93,14 @@ const FullStackServicePage = () => {
   }, []);
 
   const handleApplyClick = (gig: ProjectProposal) => {
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      // Redirect to login page with return URL
+      router.push(`/login?redirect=/proposals/apply/${gig.id}`);
+      return;
+    }
     // Navigate to the new apply page
-    window.location.href = `/proposals/apply/${gig.id}`;
+    router.push(`/proposals/apply/${gig.id}`);
   };
 
   const handleProposalSubmit = async (proposalData: any) => {
@@ -161,6 +191,128 @@ const FullStackServicePage = () => {
       });
     }
     return timeline;
+  };
+
+  // Helper function to parse eligibility criteria
+  const parseEligibilityCriteria = (criteria: EligibilityCriteria | EligibilityCriteriaItem[] | string | null): EligibilityCriteria | EligibilityCriteriaItem[] | null => {
+    if (!criteria) return null;
+    if (typeof criteria === 'string') {
+      try {
+        const parsed = JSON.parse(criteria);
+        return parsed;
+      } catch (error) {
+        console.error('Error parsing eligibility criteria:', error);
+        return null;
+      }
+    }
+    return criteria;
+  };
+
+  // Helper function to check if criteria is an array format
+  const isArrayFormat = (criteria: any): criteria is EligibilityCriteriaItem[] => {
+    return Array.isArray(criteria) && criteria.length > 0 && 'name' in criteria[0] && 'value' in criteria[0];
+  };
+
+  // Helper function to check if criteria should be hidden
+  const shouldHideCriteria = (name: string, description?: string): boolean => {
+    const nameLower = name.toLowerCase();
+    const descLower = (description || '').toLowerCase();
+    const combined = `${nameLower} ${descLower}`;
+    
+    // Patterns to hide
+    const hidePatterns = [
+      'rate and describe',
+      'please describe',
+      'describe what you worked',
+      'describe what you learnt',
+      'describe what have you worked'
+    ];
+    
+    return hidePatterns.some(pattern => combined.includes(pattern));
+  };
+
+  // Helper function to format budget with INR prefix
+  const formatBudget = (budget: string | null | undefined): string => {
+    if (!budget) return 'Contact for pricing';
+    const budgetLower = budget.toLowerCase();
+    // If already contains INR or contact/pricing keywords, return as is
+    if (budgetLower.includes('inr') || budgetLower.includes('contact') || budgetLower.includes('pricing') || budgetLower.includes('free')) {
+      return budget;
+    }
+    // Add INR prefix
+    return `INR ${budget}`;
+  };
+
+  // Helper function to check if deadline has passed
+  const isDeadlinePassed = (deadline: string): boolean => {
+    const deadlineDate = new Date(deadline);
+    const now = new Date();
+    return deadlineDate < now;
+  };
+
+  // Helper function to format eligibility criteria for display
+  const formatEligibilityCriteria = (criteria: EligibilityCriteria | EligibilityCriteriaItem[] | string | null) => {
+    const parsed = parseEligibilityCriteria(criteria);
+    if (!parsed) return null;
+
+    // Handle array format (new format)
+    if (isArrayFormat(parsed)) {
+      // Filter out criteria that should be hidden
+      const visibleCriteria = parsed.filter(item => 
+        !shouldHideCriteria(item.name, item.description)
+      );
+      
+      if (visibleCriteria.length === 0) {
+        return <p className="text-sm text-gray-600">No eligibility criteria specified</p>;
+      }
+      
+      return (
+        <div className="space-y-2">
+          {visibleCriteria.map((item, index) => (
+            <div key={item.id || index} className="flex items-start">
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-900">{item.name}</span>
+                  {item.value && (
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded ml-2">
+                      {item.value}
+                    </span>
+                  )}
+                </div>
+                {item.description && (
+                  <p className="text-xs text-gray-600 mt-1">{item.description}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Handle object format (old format)
+    const objCriteria = parsed as EligibilityCriteria;
+    return (
+      <div className="space-y-2">
+        {objCriteria.prerequisites && objCriteria.prerequisites.length > 0 && (
+          <div>
+            <span className="text-sm font-medium text-gray-900">Prerequisites:</span>
+            <p className="text-sm text-gray-600">{objCriteria.prerequisites.join(', ')}</p>
+          </div>
+        )}
+        {objCriteria.experience_level && (
+          <div>
+            <span className="text-sm font-medium text-gray-900">Experience Level:</span>
+            <p className="text-sm text-gray-600">{objCriteria.experience_level}</p>
+          </div>
+        )}
+        {objCriteria.complexity && (
+          <div>
+            <span className="text-sm font-medium text-gray-900">Complexity:</span>
+            <p className="text-sm text-gray-600">{objCriteria.complexity}/10</p>
+          </div>
+        )}
+      </div>
+    );
   };
 
   if (loading) {
@@ -309,7 +461,7 @@ const FullStackServicePage = () => {
                           <span className="text-sm font-medium text-gray-700">Duration: {project.duration}</span>
                         </div>
                         <div className="bg-white px-3 py-1 rounded-full">
-                          <span className="text-sm font-medium text-gray-700">Budget: {project.budget}</span>
+                          <span className="text-sm font-medium text-gray-700">Budget: {formatBudget(project.budget)}</span>
                         </div>
                         <div className="bg-white px-3 py-1 rounded-full">
                           <span className="text-sm font-medium text-gray-700">Max Applications: {project.max_applications}</span>
@@ -317,7 +469,7 @@ const FullStackServicePage = () => {
                       </div>
                       <p className="text-gray-700 mb-6">{project.description}</p>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-6">
                         <div>
                           <h4 className="font-semibold text-gray-900 mb-3">Skills Required:</h4>
                           <ul className="space-y-2">
@@ -328,30 +480,6 @@ const FullStackServicePage = () => {
                               </li>
                             ))}
                           </ul>
-                        </div>
-                        
-                        <div>
-                          <h4 className="font-semibold text-gray-900 mb-3">Eligibility Criteria:</h4>
-                          <div className="space-y-2">
-                            {project.eligibility_criteria?.prerequisites && (
-                              <div>
-                                <span className="text-sm font-medium text-gray-900">Prerequisites:</span>
-                                <p className="text-sm text-gray-600">{project.eligibility_criteria.prerequisites.join(', ')}</p>
-                              </div>
-                            )}
-                            {project.eligibility_criteria?.experience_level && (
-                              <div>
-                                <span className="text-sm font-medium text-gray-900">Experience Level:</span>
-                                <p className="text-sm text-gray-600">{project.eligibility_criteria.experience_level}</p>
-                              </div>
-                            )}
-                            {project.eligibility_criteria?.complexity && (
-                              <div>
-                                <span className="text-sm font-medium text-gray-900">Complexity:</span>
-                                <p className="text-sm text-gray-600">{project.eligibility_criteria.complexity}/10</p>
-                              </div>
-                            )}
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -367,13 +495,22 @@ const FullStackServicePage = () => {
                         </p>
                         
                         {/* Apply Button */}
-                        <button
-                          onClick={() => handleApplyClick(project)}
-                          className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center font-semibold"
-                        >
-                          <Send className="w-4 h-4 mr-2" />
-                          Apply for this Gig
-                        </button>
+                        {isDeadlinePassed(project.application_deadline) ? (
+                          <button
+                            disabled
+                            className="w-full bg-gray-400 text-white py-2 px-4 rounded-lg cursor-not-allowed flex items-center justify-center font-semibold"
+                          >
+                            Closed
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleApplyClick(project)}
+                            className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center font-semibold"
+                          >
+                            <Send className="w-4 h-4 mr-2" />
+                            Apply for this Gig
+                          </button>
+                        )}
                         
                         {/* Additional Info */}
                         <div className="mt-3 text-xs text-gray-500 text-center">

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../../lib/supabase';
 
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+
 // GET /api/services/embedded-iot - Get Embedded IoT service data from Supabase
 export async function GET(request: NextRequest) {
   try {
@@ -31,16 +34,34 @@ export async function GET(request: NextRequest) {
     }
 
     const projectProposals = gigs.map(gig => {
-      const criteria = typeof gig.eligibility_criteria === 'string' 
-        ? JSON.parse(gig.eligibility_criteria) 
-        : gig.eligibility_criteria;
+      let criteria: any = null;
+      let budget = 'Contact for pricing';
+      
+      // Parse eligibility_criteria
+      if (gig.eligibility_criteria) {
+        if (typeof gig.eligibility_criteria === 'string') {
+          try {
+            criteria = JSON.parse(gig.eligibility_criteria);
+          } catch (e) {
+            console.error('Error parsing eligibility_criteria:', e);
+            criteria = null;
+          }
+        } else {
+          criteria = gig.eligibility_criteria;
+        }
+        
+        // Extract budget from criteria object
+        if (criteria && typeof criteria === 'object' && criteria.budget) {
+          budget = criteria.budget;
+        }
+      }
 
       return {
         id: gig.id,
         title: gig.title,
         type: criteria?.experience_level || 'Project',
         duration: criteria?.duration || '8-10 weeks',
-        budget: criteria?.budget || 'Contact for pricing',
+        budget: budget,
         description: gig.description,
         skills_required: gig.skills_required,
         eligibility_criteria: criteria,
@@ -61,7 +82,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       service: {
         name: 'Embedded & IoT',
         description: 'Connect devices and drive real-time insights with our embedded systems and IoT solutions. Build the future of connected technology with smart, efficient systems.',
@@ -72,6 +93,14 @@ export async function GET(request: NextRequest) {
       project_proposals: projectProposals,
       total_proposals: projectProposals.length
     });
+
+    // Disable all caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+
+    return response;
 
   } catch (error) {
     console.error('Error fetching Embedded IoT service data:', error);

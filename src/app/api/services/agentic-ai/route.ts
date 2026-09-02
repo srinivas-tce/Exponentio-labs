@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../../lib/supabase';
 
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+
 // GET /api/services/agentic-ai - Get Agentic AI service data from Supabase
 export async function GET(request: NextRequest) {
   try {
@@ -36,16 +39,34 @@ export async function GET(request: NextRequest) {
 
     // Transform gigs to match the service page format
     const topProjects = gigs.map(gig => {
-      const criteria = typeof gig.eligibility_criteria === 'string' 
-        ? JSON.parse(gig.eligibility_criteria) 
-        : gig.eligibility_criteria;
+      let criteria: any = null;
+      let budget = 'Contact for pricing';
+      
+      // Parse eligibility_criteria
+      if (gig.eligibility_criteria) {
+        if (typeof gig.eligibility_criteria === 'string') {
+          try {
+            criteria = JSON.parse(gig.eligibility_criteria);
+          } catch (e) {
+            console.error('Error parsing eligibility_criteria:', e);
+            criteria = null;
+          }
+        } else {
+          criteria = gig.eligibility_criteria;
+        }
+        
+        // Extract budget from criteria object
+        if (criteria && typeof criteria === 'object' && criteria.budget) {
+          budget = criteria.budget;
+        }
+      }
 
       return {
         id: gig.id,
         title: gig.title,
         complexity: criteria?.complexity || '8/10',
         timeline: criteria?.duration || '10-12 weeks',
-        budget: criteria?.budget || 'Contact for pricing',
+        budget: budget,
         description: gig.description,
         hardware: criteria?.hardware || 'Specialized hardware required',
         software: criteria?.software || 'Advanced software stack',
@@ -68,7 +89,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       service: {
         name: 'Agentic AI Development',
         description: 'Build autonomous AI systems that think, learn, and act independently. Our agentic AI solutions create intelligent agents capable of complex reasoning, multi-step problem solving, and autonomous decision-making.',
@@ -79,6 +100,14 @@ export async function GET(request: NextRequest) {
       top_projects: topProjects,
       total_projects: topProjects.length
     });
+
+    // Disable all caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+
+    return response;
 
   } catch (error) {
     console.error('Error fetching Agentic AI service data:', error);

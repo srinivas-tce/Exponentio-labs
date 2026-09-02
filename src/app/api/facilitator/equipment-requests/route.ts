@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../../lib/supabase';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // GET /api/facilitator/equipment-requests - Get equipment requests for facilitator
 export async function GET(request: NextRequest) {
   try {

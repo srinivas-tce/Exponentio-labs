@@ -20,7 +20,7 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    logout();
+    void logout();
     setIsMenuOpen(false);
   };
 
@@ -157,7 +157,7 @@ const Header = () => {
                 href="/login"
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
               >
-                Sign in with Inpulse
+                Sign in
               </Link>
             )}
           </div>
@@ -294,7 +294,7 @@ const Header = () => {
                   className="block px-3 py-2 bg-blue-600 text-white rounded-md text-center font-medium hover:bg-blue-700 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Sign in with Inpulse
+                  Sign in
                 </Link>
               )}
             </div>

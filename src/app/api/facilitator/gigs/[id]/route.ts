@@ -128,10 +128,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
+    // Extract facilitator_id from body (used for auth, not for update)
+    const { facilitator_id, ...updateData } = body;
+
     const { data: gig, error } = await supabase
       .from('gigs')
       .update({
-        ...body,
+        ...updateData,
         updated_at: new Date().toISOString()
       })
       .eq('id', gigId)

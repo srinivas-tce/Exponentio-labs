@@ -93,11 +93,19 @@ const ProposalApplyPage: React.FC = () => {
 
   const totalSteps = 3;
 
+  // Check authentication on mount
   useEffect(() => {
-    if (params.id) {
+    if (!isAuthenticated) {
+      router.push(`/login?redirect=/proposals/apply/${params.id}`);
+      return;
+    }
+  }, [isAuthenticated, router, params.id]);
+
+  useEffect(() => {
+    if (params.id && isAuthenticated) {
       fetchGig();
     }
-  }, [params.id]);
+  }, [params.id, isAuthenticated]);
 
   const fetchGig = async () => {
     try {
@@ -531,7 +539,7 @@ const ProposalApplyPage: React.FC = () => {
               {/* Problem Statement */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Problem Statement *
+                  Feature you want to contribute *
                 </label>
                 <textarea
                   value={formData.problem_statement}

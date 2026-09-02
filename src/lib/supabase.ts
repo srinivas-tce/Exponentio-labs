@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tiyaqfnzdsfnomtmtxog.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpeWFxZm56ZHNmbm9tdG10eG9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE2OTQwMzAsImV4cCI6MjA0NzI3MDAzMH0.placeholder';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseServiceKey) {
   console.warn('Warning: Missing Supabase service key. Using placeholder key for development.');

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 
 export default function LoginForm() {
@@ -9,20 +9,36 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { login, isLoading, error, clearError, user } = useAuthStore();
+  const searchParams = useSearchParams();
+  const { login, isLoading, error, clearError, user, hydrateFromSupabase } =
+    useAuthStore();
+
+  // Restore Supabase session on mount (e.g. refresh)
+  useEffect(() => {
+    void hydrateFromSupabase();
+  }, [hydrateFromSupabase]);
 
   // Redirect after successful login
   useEffect(() => {
     if (user && !isLoading) {
-      if (user.role === 'facilitator' || user.role === 'facility-manager') {
-        router.push('/facilitator-dashboard');
-      } else if (user.role === 'student') {
-        router.push('/');
+      // Check if there's a redirect parameter
+      const redirectUrl = searchParams.get('redirect');
+      
+      if (redirectUrl) {
+        // Redirect to the specified URL
+        router.push(redirectUrl);
       } else {
-        router.push('/');
+        // Default redirect based on role
+        if (user.role === 'facilitator' || user.role === 'facility-manager') {
+          router.push('/facilitator-dashboard');
+        } else if (user.role === 'student') {
+          router.push('/');
+        } else {
+          router.push('/');
+        }
       }
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,7 +177,7 @@ export default function LoginForm() {
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Sign in with Inpulse
+                  Sign in
                 </>
               )}
             </button>
@@ -169,9 +185,9 @@ export default function LoginForm() {
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                Contact your administrator
+              Don&apos;t have an account?{' '}
+              <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Sign up
               </a>
             </p>
           </div>

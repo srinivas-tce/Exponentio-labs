@@ -113,6 +113,12 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Contact Us</h3>
             <div className="space-y-3">
+              <div>
+                <Link href="/inquiry" className="text-gray-400 hover:text-white transition-colors text-sm flex items-center space-x-2 mb-3">
+                  <Mail className="w-4 h-4" />
+                  <span>Submit an Inquiry</span>
+                </Link>
+              </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-gray-400" />
                 <span className="text-gray-400 text-sm">hello@exponentiolabs.com</span>

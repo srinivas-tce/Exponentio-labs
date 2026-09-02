@@ -18,6 +18,15 @@ import {
   Briefcase
 } from 'lucide-react';
 
+interface EligibilityCriteriaItem {
+  id: string;
+  name: string;
+  type: string;
+  value: string;
+  data_type: string;
+  description?: string;
+}
+
 interface EligibilityCriteria {
   experience_level?: string;
   prerequisites?: string[];
@@ -34,7 +43,7 @@ interface Gig {
   title: string;
   description: string;
   skills_required: string;
-  eligibility_criteria: string | EligibilityCriteria;
+  eligibility_criteria: string | EligibilityCriteria | EligibilityCriteriaItem[];
   status: string;
   application_deadline: string;
   max_applications: number;
@@ -91,10 +100,11 @@ const GigsPage: React.FC = () => {
   });
 
   // Helper function to parse eligibility criteria
-  const parseEligibilityCriteria = (criteria: string | EligibilityCriteria): EligibilityCriteria | null => {
+  const parseEligibilityCriteria = (criteria: string | EligibilityCriteria | EligibilityCriteriaItem[]): EligibilityCriteria | EligibilityCriteriaItem[] | null => {
     if (typeof criteria === 'string') {
       try {
-        return JSON.parse(criteria);
+        const parsed = JSON.parse(criteria);
+        return parsed;
       } catch (error) {
         console.error('Error parsing eligibility criteria:', error);
         return null;
@@ -103,36 +113,92 @@ const GigsPage: React.FC = () => {
     return criteria;
   };
 
+  // Helper function to check if criteria is an array format
+  const isArrayFormat = (criteria: any): criteria is EligibilityCriteriaItem[] => {
+    return Array.isArray(criteria) && criteria.length > 0 && 'name' in criteria[0] && 'value' in criteria[0];
+  };
+
+  // Helper function to check if criteria should be hidden
+  const shouldHideCriteria = (name: string, description?: string): boolean => {
+    const nameLower = name.toLowerCase();
+    const descLower = (description || '').toLowerCase();
+    const combined = `${nameLower} ${descLower}`;
+    
+    // Patterns to hide
+    const hidePatterns = [
+      'rate and describe',
+      'please describe',
+      'describe what you worked',
+      'describe what you learnt',
+      'describe what have you worked'
+    ];
+    
+    return hidePatterns.some(pattern => combined.includes(pattern));
+  };
+
   // Helper function to format eligibility criteria for display
-  const formatEligibilityCriteria = (criteria: string | EligibilityCriteria) => {
+  const formatEligibilityCriteria = (criteria: string | EligibilityCriteria | EligibilityCriteriaItem[]) => {
     const parsed = parseEligibilityCriteria(criteria);
     if (!parsed) return null;
 
+    // Handle array format (new format)
+    if (isArrayFormat(parsed)) {
+      // Filter out criteria that should be hidden
+      const visibleCriteria = parsed.filter(item => 
+        !shouldHideCriteria(item.name, item.description)
+      );
+      
+      if (visibleCriteria.length === 0) {
+        return <p className="text-sm text-gray-500">No eligibility criteria specified</p>;
+      }
+      
+      return (
+        <div className="space-y-2 text-sm">
+          {visibleCriteria.map((item, index) => (
+            <div key={item.id || index} className="flex items-start">
+              <div className="flex-1">
+                {item.value && (
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                    {item.value}
+                  </span>
+                )}
+                {item.description && (
+                  <p className="text-xs text-gray-500 mt-1">{item.description}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // Handle object format (old format)
+    const objCriteria = parsed as EligibilityCriteria;
     return (
       <div className="space-y-2 text-sm">
-        {parsed.experience_level && (
+        {objCriteria.experience_level && (
           <div className="flex items-center">
             <span className="font-medium text-gray-700 w-24">Level:</span>
-            <span className="text-gray-600">{parsed.experience_level}</span>
+            <span className="text-gray-600">{objCriteria.experience_level}</span>
           </div>
         )}
-        {parsed.duration && (
+        {objCriteria.duration && (
           <div className="flex items-center">
             <span className="font-medium text-gray-700 w-24">Duration:</span>
-            <span className="text-gray-600">{parsed.duration}</span>
+            <span className="text-gray-600">{objCriteria.duration}</span>
           </div>
         )}
-        {parsed.budget && (
+        {objCriteria.budget && (
           <div className="flex items-center">
             <span className="font-medium text-gray-700 w-24">Budget:</span>
-            <span className="text-gray-600">{parsed.budget}</span>
+            <span className="text-gray-600">{objCriteria.budget}</span>
           </div>
         )}
-        {parsed.prerequisites && parsed.prerequisites.length > 0 && (
+        {objCriteria.prerequisites && objCriteria.prerequisites.length > 0 && (
           <div className="flex items-start">
             <span className="font-medium text-gray-700 w-24 mt-1">Prerequisites:</span>
             <div className="flex flex-wrap gap-1">
-              {parsed.prerequisites.map((prereq, index) => (
+              {objCriteria.prerequisites.map((prereq, index) => (
                 <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
                   {prereq}
                 </span>
@@ -140,11 +206,11 @@ const GigsPage: React.FC = () => {
             </div>
           </div>
         )}
-        {parsed.features && parsed.features.length > 0 && (
+        {objCriteria.features && objCriteria.features.length > 0 && (
           <div className="flex items-start">
             <span className="font-medium text-gray-700 w-24 mt-1">Features:</span>
             <div className="flex flex-wrap gap-1">
-              {parsed.features.map((feature, index) => (
+              {objCriteria.features.map((feature, index) => (
                 <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
                   {feature}
                 </span>
@@ -152,10 +218,10 @@ const GigsPage: React.FC = () => {
             </div>
           </div>
         )}
-        {parsed.complexity && (
+        {objCriteria.complexity && (
           <div className="flex items-center">
             <span className="font-medium text-gray-700 w-24">Complexity:</span>
-            <span className="text-gray-600">{parsed.complexity}</span>
+            <span className="text-gray-600">{objCriteria.complexity}</span>
           </div>
         )}
       </div>
@@ -441,10 +507,13 @@ const GigsPage: React.FC = () => {
                           <Eye className="h-4 w-4" />
                           <span>View Details</span>
                         </Link>
-                        <button className="bg-gray-600 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 flex items-center space-x-2">
+                        <Link
+                          href={`/facilitator-dashboard/gigs/${gig.id}/edit`}
+                          className="bg-gray-600 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 flex items-center space-x-2"
+                        >
                           <Edit className="h-4 w-4" />
                           <span>Edit</span>
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </div>
